@@ -163,6 +163,92 @@ def fit_check(feature,perimetre_coords):
                 m = m + 1
     return fits
 
+def offset_length_fit_check(perimetre_coords,feature):
+    target_offset = feature[3]
+    walls = []
+    n = 0
+    if (len(perimetre_coords)-1 > n):
+        m = n
+    if (n == len(perimetre_coords)-1):
+        m = -1
+    while (target_offset+feature[4] > math.dist(perimetre_coords[n],perimetre_coords[m+1])):
+        target_offset = target_offset - math.dist(perimetre_coords[n],perimetre_coords[m+1])
+        walls.append(0)
+        n = n + 1
+
+        if (len(perimetre_coords)-1 > n):
+            m = n
+        if (n == len(perimetre_coords)-1):
+            m = -1
+    walls.append(1)
+    walls_target_offset = [walls,target_offset]
+    return walls_target_offset
+
+def first_free_decider(walls,fits):
+    n = 0
+    for x in walls:
+        if (x == 1):
+            break
+        n = n + 1
+    
+    first_free = False
+    if (fits[n] == 0):
+        while (fits[n] == 0):
+            if (len(fits)-1 == n):
+                n = 0
+            else:
+                n = n + 1
+        first_free = True
+    n_first_free = [n,first_free]
+    return n_first_free
+
+def axis_variables_setter(rotation_state,target_offset,feature,first_free):
+    if (first_free == True):
+        target_offset = 0
+
+    if ((rotation_state == 0) or (rotation_state == 1)):
+        target_offsetx = target_offset
+        target_offsety = 0
+        lengthx  = feature[4]
+        lengthy  = 0
+        height1x = 0
+        height1y = feature[5]
+        height2x = 0
+        height2y = feature[6]
+    if ((rotation_state == 2) or (rotation_state == 3)):
+        target_offsetx = 0
+        target_offsety = target_offset
+        lengthx  = 0
+        lengthy  = feature[4]
+        height1x = feature[5]*-1
+        height1y = 0
+        height2x = feature[6]*-1
+        height2y = 0
+    if ((rotation_state == 4) or (rotation_state == 5)):
+        target_offsetx = target_offset*-1
+        target_offsety = 0
+        lengthx  = feature[4]
+        lengthy  = 0
+        height1x = 0
+        height1y = feature[5]*-1
+        height2x = 0
+        height2y = feature[6]*-1
+    if ((rotation_state == 6) or (rotation_state == 7)):
+        target_offsetx = 0
+        target_offsety = target_offset*-1
+        lengthx  = 0
+        lengthy  = feature[4]*-1
+        height1x = feature[5]
+        height1y = 0
+        height2x = feature[6]
+        height2y = 0
+    target_offset   = [target_offsetx,target_offsety]
+    length          = [lengthx,lengthy]
+    height1         = [height1x,height1y]
+    height2         = [height2x,height2y]
+    trgt_lngth_hght1_hght2 = [target_offset,length,height1,height2]
+    return trgt_lngth_hght1_hght2
+
 def rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation):
     rotation_list = [[],[],[],[]]
     rotation_list[0].append((perimetre_coords[n])[0]+target_offset[0]  +(target_offset[0]*math.sin(rotation)))
@@ -207,113 +293,25 @@ def feature_coords(feature,perimetre_coords):
     if (sum != 0):
         print("it can start drawing the feature")
 
-        target_offset = feature[3]
-        walls = []
-        n = 0
-        if (len(perimetre_coords)-1 > n):
-            m = n
-        if (n == len(perimetre_coords)-1):
-            m = -1
-        while (target_offset+feature[4] > math.dist(perimetre_coords[n],perimetre_coords[m+1])):
-            target_offset = target_offset - math.dist(perimetre_coords[n],perimetre_coords[m+1])
-            walls.append(0)
-            n = n + 1
+        walls_target_offset = offset_length_fit_check(perimetre_coords,feature)
+        walls = walls_target_offset[0]
+        target_offset = walls_target_offset[1]
 
-            if (len(perimetre_coords)-1 > n):
-                m = n
-            if (n == len(perimetre_coords)-1):
-                m = -1
-        walls.append(1)
+        n_first_free = first_free_decider(walls,fits)
+        n = n_first_free[0]
+        first_free = n_first_free[1]
 
-        n = 0
-        for x in walls:
-            if (x == 1):
-                break
-            n = n + 1
-        
-        first_free = False
-        if (fits[n] == 0):
-            while (fits[n] == 0):
-                if (len(fits)-1 == n):
-                    n = 0
-                else:
-                    n = n + 1
-            first_free = True
-        
         if (fits[n] == 1):
             direction = direction_check(perimetre_coords,n)
             direction_words(direction)
             
             rotation_state = direction[0]
             rotation = direction[1]
-            if (rotation_state <= 1):
-                target_offsetx = target_offset
-                target_offsety = 0
-                lengthx  = feature[4]
-                lengthy  = 0
-                height1x = 0
-                height1y = feature[5]
-                height2x = 0
-                height2y = feature[6]
-            if (rotation_state == 2):
-                target_offsetx = 0
-                target_offsety = target_offset
-                lengthx  = 0
-                lengthy  = feature[4]
-                height1x = feature[5]*-1
-                height1y = 0
-                height2x = feature[6]*-1
-                height2y = 0
-            if (rotation_state == 3):
-                target_offsetx = 0
-                target_offsety = target_offset
-                lengthx  = 0
-                lengthy  = feature[4]
-                height1x = feature[5]*-1
-                height1y = 0
-                height2x = feature[6]*-1
-                height2y = 0
-            if (rotation_state == 4):
-                target_offsetx = target_offset*-1
-                target_offsety = 0
-                lengthx  = feature[4]
-                lengthy  = 0
-                height1x = 0
-                height1y = feature[5]*-1
-                height2x = 0
-                height2y = feature[6]*-1
-            if (rotation_state == 5):
-                target_offsetx = target_offset*-1
-                target_offsety = 0
-                lengthx  = feature[4]
-                lengthy  = 0
-                height1x = 0
-                height1y = feature[5]*-1
-                height2x = 0
-                height2y = feature[6]*-1
-            if (rotation_state == 6):
-                target_offsetx = 0
-                target_offsety = target_offset*-1
-                lengthx  = 0
-                lengthy  = feature[4]*-1
-                height1x = feature[5]
-                height1y = 0
-                height2x = feature[6]
-                height2y = 0
-            if (rotation_state == 7):
-                target_offsetx = 0
-                target_offsety = target_offset*-1
-                lengthx  = 0
-                lengthy  = feature[4]*-1
-                height1x = feature[5]
-                height1y = 0
-                height2x = feature[6]
-                height2y = 0
-            
-            target_offset   = [target_offsetx,target_offsety]
-            length          = [lengthx,lengthy]
-            height1         = [height1x,height1y]
-            height2         = [height2x,height2y]
+            trgt_lngth_hght1_hght2 = axis_variables_setter(rotation_state,target_offset,feature,first_free)
+            target_offset   = trgt_lngth_hght1_hght2[0]
+            length          = trgt_lngth_hght1_hght2[1]
+            height1         = trgt_lngth_hght1_hght2[2]
+            height2         = trgt_lngth_hght1_hght2[3]
 
             feature_Coords = rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation)
 
@@ -323,7 +321,7 @@ def feature_coords(feature,perimetre_coords):
                 perimetre_coords.insert(n+1,xy1)
                 n = n + 1
                 m = m + 1
-
+            remove_duplicates(perimetre_coords)
         
         print("hfgierg")
         #perimetre_coords.insert()
@@ -346,22 +344,20 @@ perimetre_length=perimeter_length(perimetre_coords,0)
 print("room perimetre: ", perimetre_length[0])
 
 n = 0
-#features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
-#           ,[0, 0, 0, 0, 0, 0, 0, 0, 0, "triangle feature thing2", ""]]
+features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
+           ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 #features = [[0, 0, 0, 3, 2, 3, 1, 0, 0, "triangle feature thing1", ""]]
-features = [[0, 0, 0, 3, 2, 3, 3, 0, 0, "triangle feature thing1", ""]
-           ,[0, 0, 0, 7, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
+#features = [[0, 0, 0, 3, 2, 3, 3, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 0, 7, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 while (n < len(features)):
     if ((features[n])[0] == 0):
         print("the feature is a triangle or rectangle thing")
         passed = feature_coords(features[n],perimetre_coords)
-    remove_duplicates(perimetre_coords)
-    print (perimetre_coords)
-    print(perimeter_length(perimetre_coords,0))
 
     n = n + 1
 
-
+print (perimetre_coords)
+print(perimeter_length(perimetre_coords,0))
 
 
 
