@@ -93,22 +93,22 @@ def direction_check(perimetre_coords,n):
         # diagonal
         # right,down
         if (((perimetre_coords[n])[0] < (perimetre_coords[m+1])[0]) and ((perimetre_coords[n])[1] < (perimetre_coords[m+1])[1])):
-            angle = math.atan((math.dist((perimetre_coords[n])[0],(perimetre_coords[m+1])[0]))/(math.dist((perimetre_coords[n])[1],(perimetre_coords[m+1])[1])))
+            angle = math.atan(math.dist([(perimetre_coords[n])[1]], [(perimetre_coords[m+1])[1]])/math.dist([(perimetre_coords[n])[0]], [(perimetre_coords[m+1])[0]]))
             direction = [1,angle]
             return direction
         # right,up
         if (((perimetre_coords[n])[0] < (perimetre_coords[m+1])[0]) and ((perimetre_coords[n])[1] > (perimetre_coords[m+1])[1])):
-            angle = math.atan((math.dist((perimetre_coords[n])[0],(perimetre_coords[m+1])[0]))/(math.dist((perimetre_coords[n])[1],(perimetre_coords[m+1])[1])))
+            angle = math.atan((math.dist([(perimetre_coords[n])[1]],[(perimetre_coords[m+1])[1]]))/(math.dist([(perimetre_coords[n])[0]],[(perimetre_coords[m+1])[0]])))
             direction = [7,angle]
             return direction
         # left,down
         if (((perimetre_coords[n])[0] > (perimetre_coords[m+1])[0]) and ((perimetre_coords[n])[1] < (perimetre_coords[m+1])[1])):
-            angle = math.atan((math.dist((perimetre_coords[n])[0],(perimetre_coords[m+1])[0]))/(math.dist((perimetre_coords[n])[1],(perimetre_coords[m+1])[1])))
+            angle = math.atan((math.dist([(perimetre_coords[n])[1]],[(perimetre_coords[m+1])[1]]))/(math.dist([(perimetre_coords[n])[0]],[(perimetre_coords[m+1])[0]])))
             direction = [3,angle]
             return direction
         # left,up
         if (((perimetre_coords[n])[0] > (perimetre_coords[m+1])[0]) and ((perimetre_coords[n])[1] > (perimetre_coords[m+1])[1])):
-            angle = math.atan((math.dist((perimetre_coords[n])[0],(perimetre_coords[m+1])[0]))/(math.dist((perimetre_coords[n])[1],(perimetre_coords[m+1])[1])))
+            angle = math.atan((math.dist([(perimetre_coords[n])[1]],[(perimetre_coords[m+1])[1]]))/(math.dist([(perimetre_coords[n])[0]],[(perimetre_coords[m+1])[0]])))
             direction = [5,angle]
             return direction
 
@@ -317,11 +317,12 @@ def feature_coords(feature,perimetre_coords):
 
             feature_Coords = rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation)
 
-            n = 0
-            while (len(feature_Coords) > n):
-                xy1 = feature_Coords[n]
+            m = 0
+            while (len(feature_Coords) > m):
+                xy1 = feature_Coords[m]
                 perimetre_coords.insert(n+1,xy1)
                 n = n + 1
+                m = m + 1
 
         
         print("hfgierg")
@@ -345,15 +346,18 @@ perimetre_length=perimeter_length(perimetre_coords,0)
 print("room perimetre: ", perimetre_length[0])
 
 n = 0
-features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
-           ,[0, 0, 0, 0, 0, 0, 0, 0, 0, "triangle feature thing2", ""]]
+#features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 0, 0, 0, 0, 0, 0, 0, "triangle feature thing2", ""]]
 #features = [[0, 0, 0, 3, 2, 3, 1, 0, 0, "triangle feature thing1", ""]]
+features = [[0, 0, 0, 3, 2, 3, 3, 0, 0, "triangle feature thing1", ""]
+           ,[0, 0, 0, 7, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 while (n < len(features)):
     if ((features[n])[0] == 0):
         print("the feature is a triangle or rectangle thing")
         passed = feature_coords(features[n],perimetre_coords)
     remove_duplicates(perimetre_coords)
-
+    print (perimetre_coords)
+    print(perimeter_length(perimetre_coords,0))
 
     n = n + 1
 
