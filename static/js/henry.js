@@ -38,7 +38,7 @@ function prepareDocument(){
 function roomA(roomAroom){
     if (roomAroom == 0){
         //these variables declare the sizes specified for room
-        values = document.getElementById("the data from python")
+        values = document.getElementById("the data from python").innerHTML
         var metreswidth = 10.0;
         var metresheight = 10.0;
         var metrewall = 0.3;
