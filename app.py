@@ -1,18 +1,18 @@
 from ast import Pass
 from flask import Flask, render_template, request
-from graphics.perimetre import initial_perim, perimeter_length
-
+from graphics.perimetre import start_the_programe
 app = Flask(__name__)
 
 @app.route('/', methods=["GET", "POST"])
 
 def drawing():
-   roomlength = 9
-   roomwidth = 8
-   list = []
-   list[0]=initial_perim(roomlength,roomwidth)
-   perimeter_length(list[0],0)
-   return render_template('drawing.html', value=list)
+   
+   box = [20,20]
+   features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
+             ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
+   perimetre_coords = start_the_programe(box,features)
+
+   return render_template('drawing.html', value=perimetre_coords)
 
 
 

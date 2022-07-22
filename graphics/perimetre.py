@@ -28,18 +28,17 @@
 from __future__ import division
 import math
 
-
 def initial_perim(length,width):
-    myperimetre = []
-    myperimetre.append([0, 0])
-    myperimetre.append([length, 0])
-    myperimetre.append([length,width])
-    myperimetre.append([0,width])
-    return myperimetre
+    perimetre_coords = []
+    perimetre_coords.append([0, 0])
+    perimetre_coords.append([length, 0])
+    perimetre_coords.append([length,width])
+    perimetre_coords.append([0,width])
+    return perimetre_coords
 
-def perimeter_length(myperimetre,upto_point):
+def perimeter_length(perimetre_coords,upto_point):
     if (upto_point <= 0):
-        array_length = len(myperimetre)
+        array_length = len(perimetre_coords)
     else:
         array_length = upto_point
     length = [0,[]]
@@ -53,9 +52,10 @@ def perimeter_length(myperimetre,upto_point):
             #The last array pair is back to 00
         # finds the distance between 2 coordinates 
         # adds that distance to the length variable
-        (length[1]).append(math.dist((myperimetre[n]), (myperimetre[m+1])))
-        length[0] = length[0] + (math.dist((myperimetre[n]), (myperimetre[m+1])))
-        print("room wall: ", n+1, " wall length: ", math.dist((myperimetre[n]), (myperimetre[m+1])))
+        distance = round(math.dist((perimetre_coords[n]), (perimetre_coords[m+1])),5)
+        (length[1]).append(distance)
+        length[0] = length[0] + (distance)
+        print("room wall: ", n+1, " wall length: ", (distance))
         n = n + 1
     return length
 
@@ -279,23 +279,6 @@ def rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotati
             feature_Coords.append(item)
     return feature_Coords
 
-def rotation_trig_original(perimetre_coords,n,target_offset,length,height1,height2,rotation):
-    rotation_list = [[],[],[],[]]
-    rotation_list[0].append((perimetre_coords[n])[0]+target_offset[0]  +(target_offset[0]*math.sin(rotation)))
-    rotation_list[0].append((perimetre_coords[n])[1]+target_offset[1]  +(target_offset[1]*math.cos(rotation)))
-    rotation_list[1].append((perimetre_coords[n])[0]+target_offset[0]+height1[0]  +(target_offset[0]*math.sin(rotation)))
-    rotation_list[1].append((perimetre_coords[n])[1]+target_offset[1]+height1[1]  +(target_offset[1]*math.cos(rotation)))
-    rotation_list[2].append((perimetre_coords[n])[0]+target_offset[0]+height2[0]+length[0]  +(target_offset[0]*math.sin(rotation)))
-    rotation_list[2].append((perimetre_coords[n])[1]+target_offset[1]+height2[1]+length[1]  +(target_offset[1]*math.cos(rotation)))
-    rotation_list[3].append((perimetre_coords[n])[0]+target_offset[0]+length[0]  +(target_offset[0]*math.sin(rotation)))
-    rotation_list[3].append((perimetre_coords[n])[1]+target_offset[1]+length[1]  +(target_offset[1]*math.cos(rotation)))
-    #feature_coords = list(set(rotation_list))
-    feature_Coords = []
-    for item in rotation_list:
-        if item not in feature_Coords:
-            feature_Coords.append(item)
-    return feature_Coords
-
 def remove_duplicates(perimetre_coords):
     n1 = 0
     while (len(perimetre_coords) > n1):
@@ -310,6 +293,14 @@ def remove_duplicates(perimetre_coords):
                 perimetre_coords.pop(n2-1)
             n2 = n2 + 1
         n1 = n1 + 1
+
+def rounding_outputs(perimetre_coords):
+    n = 0
+    while (len(perimetre_coords) > n):
+        (perimetre_coords[n])[0] = round((perimetre_coords[n])[0],5)
+        (perimetre_coords[n])[1] = round((perimetre_coords[n])[1],5)
+        n = n + 1
+    return perimetre_coords
 
 def feature_coords(feature,perimetre_coords):
     #feature = [typelist, subtype, subsubtype, offset, length, height1, height2, inward, inneroffset, name, leadingto]
@@ -354,42 +345,48 @@ def feature_coords(feature,perimetre_coords):
                 m = m + 1
             remove_duplicates(perimetre_coords)
         
-        print("hfgierg")
-        #perimetre_coords.insert()
-        #perimeter_length(perimetre_coords,upto_point)
+        return perimetre_coords
+
+def start_the_programe(box,features):
+    perimetre_coords=initial_perim(box[0],box[1])
+    print (perimetre_coords)
+    print("room perimetre: ", perimeter_length(perimetre_coords,0)[0])
+
+    n = 0
+    while (n < len(features)):
+        if ((features[n])[0] == 0):
+            print("the feature is a triangle or rectangle thing")
+            perimetre_coords = feature_coords(features[n],perimetre_coords)
+            perimetre_coords = rounding_outputs(perimetre_coords)
+        print (perimetre_coords)
+
+        n = n + 1
 
 
 
-        
 
 
 
-    
 
 
-
+print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 box = [10,10]
-perimetre_coords=initial_perim(box[0],box[1])
-print (perimetre_coords)
-perimetre_length=perimeter_length(perimetre_coords,0)
-print("room perimetre: ", perimetre_length[0])
-
-n = 0
 features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
            ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
+perimetre_coords = start_the_programe(box,features)
+    
+
 #features = [[0, 0, 0, 3, 2, 3, 1, 0, 0, "triangle feature thing1", ""]]
 #features = [[0, 0, 0, 3, 2, 3, 3, 0, 0, "triangle feature thing1", ""]
 #           ,[0, 0, 0, 7, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
-while (n < len(features)):
-    if ((features[n])[0] == 0):
-        print("the feature is a triangle or rectangle thing")
-        passed = feature_coords(features[n],perimetre_coords)
-    print (perimetre_coords)
 
-    n = n + 1
 
-print (perimetre_coords)
-print(perimeter_length(perimetre_coords,0))
+
+
+
+
+
+
 
 
 
