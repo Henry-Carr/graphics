@@ -11,7 +11,7 @@ def drawing():
    features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
              ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
    perimetre_coords = start_the_programe(box,features)
-
+   print(perimetre_coords)
    return render_template('drawing.html', value=perimetre_coords)
 
 

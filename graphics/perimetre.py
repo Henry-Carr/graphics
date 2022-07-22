@@ -361,6 +361,8 @@ def start_the_programe(box,features):
         print (perimetre_coords)
 
         n = n + 1
+    return perimetre_coords
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 
 
@@ -370,10 +372,14 @@ def start_the_programe(box,features):
 
 
 print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+
+
+""" the thing that starts it on its own
 box = [10,10]
 features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
            ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 perimetre_coords = start_the_programe(box,features)
+"""
     
 
 #features = [[0, 0, 0, 3, 2, 3, 1, 0, 0, "triangle feature thing1", ""]]
