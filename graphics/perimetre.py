@@ -353,6 +353,7 @@ while (n < len(features)):
     if ((features[n])[0] == 0):
         print("the feature is a triangle or rectangle thing")
         passed = feature_coords(features[n],perimetre_coords)
+    print (perimetre_coords)
 
     n = n + 1
 
