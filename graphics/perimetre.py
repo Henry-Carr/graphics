@@ -25,6 +25,7 @@
 #
 # 5) radiator
 
+from __future__ import division
 import math
 
 
@@ -202,7 +203,7 @@ def first_free_decider(walls,fits):
     n_first_free = [n,first_free]
     return n_first_free
 
-def axis_variables_setter(rotation_state,target_offset,feature,first_free):
+def axis_variables_setter(rotation_state,target_offset,feature,first_free,rotation):
     if (first_free == True):
         target_offset = 0
 
@@ -215,6 +216,17 @@ def axis_variables_setter(rotation_state,target_offset,feature,first_free):
         height1y = feature[5]
         height2x = 0
         height2y = feature[6]
+        rotation = rotation + ((0*math.pi)/4)
+    """if ((rotation_state == 0) or (rotation_state == 1)):
+        target_offsetx = target_offset
+        target_offsety = target_offset
+        lengthx  = feature[4]
+        lengthy  = feature[4]
+        height1x = feature[5]
+        height1y = feature[5]
+        height2x = feature[6]
+        height2y = feature[6]
+        rotation = rotation + ((0*math.pi)/4)"""
     if ((rotation_state == 2) or (rotation_state == 3)):
         target_offsetx = 0
         target_offsety = target_offset
@@ -224,6 +236,7 @@ def axis_variables_setter(rotation_state,target_offset,feature,first_free):
         height1y = 0
         height2x = feature[6]*-1
         height2y = 0
+        rotation = rotation + ((1*math.pi)/4)
     if ((rotation_state == 4) or (rotation_state == 5)):
         target_offsetx = target_offset*-1
         target_offsety = 0
@@ -233,6 +246,7 @@ def axis_variables_setter(rotation_state,target_offset,feature,first_free):
         height1y = feature[5]*-1
         height2x = 0
         height2y = feature[6]*-1
+        rotation = rotation + ((2*math.pi)/4)
     if ((rotation_state == 6) or (rotation_state == 7)):
         target_offsetx = 0
         target_offsety = target_offset*-1
@@ -242,14 +256,78 @@ def axis_variables_setter(rotation_state,target_offset,feature,first_free):
         height1y = 0
         height2x = feature[6]
         height2y = 0
+        rotation = rotation + ((4*math.pi)/4)
     target_offset   = [target_offsetx,target_offsety]
     length          = [lengthx,lengthy]
     height1         = [height1x,height1y]
     height2         = [height2x,height2y]
-    trgt_lngth_hght1_hght2 = [target_offset,length,height1,height2]
+    rotationlist    = [rotation]
+    trgt_lngth_hght1_hght2 = [target_offset,length,height1,height2,rotationlist]
     return trgt_lngth_hght1_hght2
 
+def no_dividing_by_zero(target_offset,height1,height2,length):
+    n = 0
+    divisions = [[],[],[],[]]
+    while (n < 2):
+        if (target_offset[n] != 0):
+            divisions[n] = (height1[n]/target_offset[n])
+        else:
+            divisions[n] = 0
+        n = n + 1
+    
+    m = 0
+    while (n < 4):
+        if (length[m] != 0):
+            divisions[n] = (height2[m]/(target_offset[m]+length[m]))
+        else:
+            divisions[n] = 0
+        n = n + 1
+        m = m + 1
+    return divisions
+
 def rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation):
+    rotation_list = [[],[],[],[]]
+    
+    divisions = no_dividing_by_zero(target_offset,height1,height2,length)
+    hght10_over_trgt_offst0 = divisions[0]
+    hght11_over_trgt_offst1 = divisions[1]
+    hght20_over_trgt_offst0_plus_lngth0 = divisions[2]
+    hght21_over_trgt_offst1_plus_lngth1 = divisions[3]
+
+
+    rotation_list[0].append((perimetre_coords[n])[0]+(target_offset[0]*math.sin((math.pi/2)-(rotation))))
+    rotation_list[0].append((perimetre_coords[n])[1]+(target_offset[1]*math.cos((math.pi/2)-(rotation))))
+
+    rotation_list[1].append((perimetre_coords[n])[0]+((math.sqrt((target_offset[0]**2)+(height1[0]**2)))*math.sin((math.pi/2)-(rotation+(math.atan(hght10_over_trgt_offst0))))))
+    rotation_list[1].append((perimetre_coords[n])[1]+((math.sqrt((target_offset[1]**2)+(height1[1]**2)))*math.cos((math.pi/2)-(rotation+(math.atan(hght11_over_trgt_offst1))))))
+
+    rotation_list[2].append((perimetre_coords[n])[0]+((math.sqrt(((target_offset[0]+length[0])**2)+(height2[0]**2)))*math.sin((math.pi/2)-(rotation+(math.atan(hght20_over_trgt_offst0_plus_lngth0))))))
+    rotation_list[2].append((perimetre_coords[n])[1]+((math.sqrt(((target_offset[1]+length[1])**2)+(height2[1]**2)))*math.cos((math.pi/2)-(rotation+(math.atan(hght21_over_trgt_offst1_plus_lngth1))))))
+
+    rotation_list[3].append((perimetre_coords[n])[0]+((target_offset[0]+length[0])*math.sin((math.pi/2)-(rotation))))
+    rotation_list[3].append((perimetre_coords[n])[1]+((target_offset[1]+length[1])*math.sin((math.pi/2)-(rotation))))
+
+
+    """ the original maths that ended up dividing by 0
+    rotation_list[0].append((perimetre_coords[n])[0]+(target_offset[0]*math.sin((math.pi/2)-(rotation))))
+    rotation_list[0].append((perimetre_coords[n])[1]+(target_offset[1]*math.cos((math.pi/2)-(rotation))))
+
+    rotation_list[1].append((perimetre_coords[n])[0]+((math.sqrt((target_offset[0]**2)+(height1[0]**2)))*math.sin((math.pi/2)-(rotation+(math.atan(height1[0]/target_offset[0]))))))
+    rotation_list[1].append((perimetre_coords[n])[1]+((math.sqrt((target_offset[1]**2)+(height1[1]**2)))*math.cos((math.pi/2)-(rotation+(math.atan(height1[1]/target_offset[1]))))))
+
+    rotation_list[2].append((perimetre_coords[n])[0]+((math.sqrt(((target_offset[0]+length[0])**2)+(height2[0]**2)))*math.sin((math.pi/2)-(rotation+(math.atan(height2[0]/(target_offset[0]+length[0])))))))
+    rotation_list[2].append((perimetre_coords[n])[1]+((math.sqrt(((target_offset[1]+length[1])**2)+(height2[1]**2)))*math.cos((math.pi/2)-(rotation+(math.atan(height2[1]/(target_offset[1]+length[1])))))))
+
+    rotation_list[3].append((perimetre_coords[n])[0]+((target_offset[0]+length[0])*math.sin((math.pi/2)-(rotation))))
+    rotation_list[3].append((perimetre_coords[n])[1]+((target_offset[1]+length[1])*math.sin((math.pi/2)-(rotation))))"""
+    #feature_coords = list(set(rotation_list))
+    feature_Coords = []
+    for item in rotation_list:
+        if item not in feature_Coords:
+            feature_Coords.append(item)
+    return feature_Coords
+
+def rotation_trig_original(perimetre_coords,n,target_offset,length,height1,height2,rotation):
     rotation_list = [[],[],[],[]]
     rotation_list[0].append((perimetre_coords[n])[0]+target_offset[0]  +(target_offset[0]*math.sin(rotation)))
     rotation_list[0].append((perimetre_coords[n])[1]+target_offset[1]  +(target_offset[1]*math.cos(rotation)))
@@ -307,11 +385,12 @@ def feature_coords(feature,perimetre_coords):
             
             rotation_state = direction[0]
             rotation = direction[1]
-            trgt_lngth_hght1_hght2 = axis_variables_setter(rotation_state,target_offset,feature,first_free)
+            trgt_lngth_hght1_hght2 = axis_variables_setter(rotation_state,target_offset,feature,first_free,rotation)
             target_offset   = trgt_lngth_hght1_hght2[0]
             length          = trgt_lngth_hght1_hght2[1]
             height1         = trgt_lngth_hght1_hght2[2]
             height2         = trgt_lngth_hght1_hght2[3]
+            rotation        = (trgt_lngth_hght1_hght2[4])[0]
 
             feature_Coords = rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation)
 
