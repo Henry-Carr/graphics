@@ -302,6 +302,28 @@ def rounding_outputs(perimetre_coords):
         n = n + 1
     return perimetre_coords
 
+def extra_data_for_js(perimetre_coords):
+    n = 0
+    x_list = []
+    y_list = []
+    while (2 > n):
+        m = 0
+        while (len(perimetre_coords) > m):
+            if (n == 0):
+                x_list.append((perimetre_coords[m])[n])
+            if (n == 1):
+                y_list.append((perimetre_coords[m])[n])
+            m = m + 1
+        n = n + 1
+    x_list.sort()
+    x_max_len = (math.dist([x_list[0]],[x_list[len(x_list)-1]]))
+    y_list.sort()
+    y_max_len = (math.dist([y_list[0]],[y_list[len(y_list)-1]]))
+
+
+    js_data = [[x_max_len,y_max_len],perimetre_coords]
+    return js_data
+
 def feature_coords(feature,perimetre_coords):
     #feature = [typelist, subtype, subsubtype, offset, length, height1, height2, inward, inneroffset, name, leadingto]
     
@@ -361,8 +383,9 @@ def start_the_programe(box,features):
         print (perimetre_coords)
 
         n = n + 1
-    return perimetre_coords
-    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    js_data = extra_data_for_js(perimetre_coords)
+    return js_data
+    #print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 
 
@@ -374,12 +397,13 @@ def start_the_programe(box,features):
 print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 
-""" the thing that starts it on its own
-box = [10,10]
+
+#the thing that starts it on its own
+box = [20,20]
 features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
            ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 perimetre_coords = start_the_programe(box,features)
-"""
+
     
 
 #features = [[0, 0, 0, 3, 2, 3, 1, 0, 0, "triangle feature thing1", ""]]
