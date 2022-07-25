@@ -303,7 +303,7 @@ def rounding_outputs(perimetre_coords):
         n = n + 1
     return perimetre_coords
 
-def extra_data_for_js(perimetre_coords):
+def splitting_coords(perimetre_coords):
     n = 0
     x_list = []
     y_list = []
@@ -316,13 +316,39 @@ def extra_data_for_js(perimetre_coords):
                 y_list.append((perimetre_coords[m])[n])
             m = m + 1
         n = n + 1
+    lists = [x_list,y_list]
+    return lists
+
+def finding_area(lists):
+    print("how do i do this")
+    n = 0
+    sum = 0
+    x_list = lists[0]
+    y_list = lists[1]
+
+    while (len(x_list) > n):
+        if (len(x_list)-1 > n):
+            m = n
+        if (n == len(x_list)-1):
+            m = 0
+        sum = sum + ((x_list[n]*y_list[m])-((y_list[n]*x_list[m])))
+
+    area = abs(sum/2)
+    return area
+        
+
+
+def extra_data_for_js(perimetre_coords):
+    lists = splitting_coords(perimetre_coords)
+    x_list = lists[0]
+    y_list = lists[1]
     x_list.sort()
     y_list.sort()
     max_lengths = []
     max_lengths.append(math.dist([x_list[0]],[x_list[len(x_list)-1]]))
     max_lengths.append(math.dist([y_list[0]],[y_list[len(y_list)-1]]))
 
-
+    area = finding_area(lists)
 
     class data_for_js:
         perimetre = 'this is where the perimetre should be'
@@ -418,11 +444,12 @@ print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 
 #the thing that starts it on its own
-"""
+
 box = [20,20]
-features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
-           ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
-perimetre_coords = start_the_programe(box,features)"""
+#features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
+features = [[0, 0, 0, 0, 0, 0, 0, 0, 0, "", ""]]
+perimetre_coords = start_the_programe(box,features)
 
     
 
