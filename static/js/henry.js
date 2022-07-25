@@ -35,13 +35,26 @@ function prepareDocument(){
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function roomA(roomAroom){
+function formatting_from_python(){
+    var values = document.getElementById("the data from python").innerHTML;
+    values = JSON.parse(values);
+    var python_data = [values.perimetre,values.xy_max_lens]
+    console.log(python_data);
+    return python_data
+}
+
+
+function roomA(roomAroom,python_data){
+
     if (roomAroom == 0){
         //these variables declare the sizes specified for room
-        values = document.getElementById("the data from python").innerHTML
-        var metreswidth = 10.0;
-        var metresheight = 10.0;
-        var metrewall = 0.3;
+        
+        //var metreswidth = 10.0;
+        //var metresheight = 10.0;
+
+        var metreswidth = (python_data[1])[0];
+        var metresheight = (python_data[1])[1];
+        var metrewall = 1.5;
         var screenpercent = 0.75;
         var roomAspec = [metreswidth,metresheight,metrewall,screenpercent];
         return roomAspec;
@@ -90,17 +103,6 @@ function roomA(roomAroom){
         
         var roomAspec = [1,2,3,4,5,6,7];
         return roomAspec;
-    }
-
-    if (roomAroom[0] == 2){
-        // these variables declare the specifics for the single door
-        var numberofsingledoors =   0;
-        var metreslongdoor      =   [0.8,   0.8 ];
-        var metresthickdoor     =   [0.05,  0.05];
-        var singledoorscenario  =   [0,     1   ];
-        var metresoffsetdoor    =   [3,     9.2 ];
-        var singledoorspec = [numberofsingledoors,metreslongdoor,metresthickdoor,singledoorscenario,metresoffsetdoor];
-        return singledoorspec;
     }
 }
 
@@ -465,12 +467,13 @@ function drawRect(){
     console.log("aaaaaa");
     let c = cnv.getContext("2d");
     
-    
+    python_data = formatting_from_python()
+
     cnv.width = window.innerWidth;
     cnv.height = window.innerHeight;
 
     var roomAroom = 0
-    roomAspec = roomA(roomAroom);
+    roomAspec = roomA(roomAroom,python_data);
     //[metreswidth,metresheight,metrewall,screenpercent]
     metreswidth = roomAspec[0]
     metresheight = roomAspec[1]
@@ -478,11 +481,12 @@ function drawRect(){
     screenpercent = roomAspec[3]
 
     //this makes sure that the longest length is always the width
+    /*
     if (metreswidth < metresheight){
         var temp = metreswidth;
         metreswidth = metresheight;
         metresheight = temp;
-    }
+    }*/
     
     //these "if" statements find the shortest axis of the window
     //and make the horisontal side of the room "screenpercent" as a percentage of it
@@ -490,15 +494,58 @@ function drawRect(){
     //an aspect ratio between both of the walls leaving both lengths in pixels
     //this is done to ensure that the entire room fits in the window and doesnt
     //overlap the size of the canvas
+
+    /*
     if (cnv.width < cnv.height){
         console.log("canvas height is longer");
         pixelwidth = cnv.width*screenpercent;
-        pixelheight = pixelwidth*(metresheight/metreswidth);
+        pixelheight = pixelwidth*(metreswidth/metresheight);
     }
     if (cnv.width >= cnv.height){
         console.log("canvas width is longer");
-        pixelwidth = cnv.height*screenpercent;
-        pixelheight = pixelwidth*(metresheight/metreswidth);
+        pixelheight = cnv.height*screenpercent;
+        pixelwidth = pixelheight*(metresheight/metreswidth);
+    }*/
+
+    /*    
+    if (metreswidth >= metresheight){
+        var pixelheight = cnv.height*screenpercent;
+        var pixelwidth = pixelheight*(wdthhght[1]);
+    }
+    if (metresheight > metreswidth){
+        var pixelwidth = cnv.width*screenpercent;
+        var pixelheight = pixelwidth*(wdthhght[0]);
+    }*/
+
+    /*
+    if (pixelheight >= cnv.height){
+        pixelwidth = cnv.width*screenpercent;
+        pixelheight = pixelwidth*(metreswidth/metresheight);
+    }
+    if (pixelwidth >= cnv.width){
+        pixelwidth = cnv.width*screenpercent;
+        pixelheight = pixelwidth*(metreswidth/metresheight);
+    }*/
+    //wdthhght = [(metresheight/metreswidth),(metreswidth/metresheight)]
+    //wdthhght = [(metreswidth/metresheight),(metresheight/metreswidth)]
+
+
+    var pixelheight = (cnv.height*screenpercent)+1;
+    var pixelwidth = (cnv.width*screenpercent)+1;
+
+
+
+    if (cnv.height*screenpercent <= pixelheight){
+        var pixelheight = cnv.height*screenpercent;
+        //var pixelwidth = pixelheight*(metreswidth/metresheight);
+        //var pixelwidth = pixelheight*(metresheight/metreswidth);
+        var pixelwidth = pixelheight*(metreswidth/metresheight);
+    }
+    if (cnv.width*screenpercent <= pixelwidth){
+        var pixelwidth = cnv.width*screenpercent;
+        //var pixelheight = pixelwidth*(metresheight/metreswidth);
+        //var pixelheight = pixelwidth*(metreswidth/metresheight);
+        var pixelheight = pixelwidth*(metresheight/metreswidth);
     }
 
 
@@ -555,7 +602,7 @@ function drawRect(){
 
     //[numberoffeatures,metreslongft,metreswideftA,metreswideftB,metreshyp,ang,metresoffsetft];
     var roomAroom = [1,metreswidth,metresheight];
-    roomAspec = roomA(roomAroom);
+    roomAspec = roomA(roomAroom,python_data);
 
     numberoffeatures = roomAspec[0]
     var n = 0;
@@ -585,7 +632,6 @@ function drawRect(){
 
     var metreslongdoor      =   0.8;
     var metresthickdoor     =   0.05;
-    var singledoorscenario  =   0;
     var pixellongdoor = metreslongdoor*aspectratio;
     var pixelthickdoor = metresthickdoor*aspectratio;
     c.beginPath();

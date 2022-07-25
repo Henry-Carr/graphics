@@ -27,6 +27,7 @@
 
 from __future__ import division
 import math
+import json
 
 def initial_perim(length,width):
     perimetre_coords = []
@@ -316,12 +317,29 @@ def extra_data_for_js(perimetre_coords):
             m = m + 1
         n = n + 1
     x_list.sort()
-    x_max_len = (math.dist([x_list[0]],[x_list[len(x_list)-1]]))
     y_list.sort()
-    y_max_len = (math.dist([y_list[0]],[y_list[len(y_list)-1]]))
+    max_lengths = []
+    max_lengths.append(math.dist([x_list[0]],[x_list[len(x_list)-1]]))
+    max_lengths.append(math.dist([y_list[0]],[y_list[len(y_list)-1]]))
 
 
-    js_data = [[x_max_len,y_max_len],perimetre_coords]
+
+    class data_for_js:
+        perimetre = 'this is where the perimetre should be'
+        xy_max_lens = 'this is where the max lengths should be'
+            
+    #create object
+    some_data_for_js = data_for_js()
+    some_data_for_js.perimetre = perimetre_coords
+    some_data_for_js.xy_max_lens = max_lengths
+
+    #convert to JSON string
+    js_data = json.dumps(some_data_for_js.__dict__)
+
+    #print json string
+    print(js_data)
+
+
     return js_data
 
 def feature_coords(feature,perimetre_coords):
@@ -384,6 +402,7 @@ def start_the_programe(box,features):
 
         n = n + 1
     js_data = extra_data_for_js(perimetre_coords)
+
     return js_data
     #print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
@@ -399,10 +418,11 @@ print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 
 #the thing that starts it on its own
+"""
 box = [20,20]
 features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
            ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
-perimetre_coords = start_the_programe(box,features)
+perimetre_coords = start_the_programe(box,features)"""
 
     
 
