@@ -38,7 +38,7 @@ function prepareDocument(){
 function formatting_from_python(){
     var values = document.getElementById("the data from python").innerHTML;
     values = JSON.parse(values);
-    var python_data = [values.perimetre,values.xy_max_lens]
+    var python_data = [values.perimetre,values.outer_perim,values.xy_max_lens,values.perimetre_segments,values.outer_perim_segments]
     console.log(python_data);
     return python_data
 }
@@ -52,8 +52,8 @@ function roomA(roomAroom,python_data){
         //var metreswidth = 10.0;
         //var metresheight = 10.0;
 
-        var metreswidth = (python_data[1])[0];
-        var metresheight = (python_data[1])[1];
+        var metreswidth = (python_data[2])[0];
+        var metresheight = (python_data[2])[1];
         var metrewall = 1.5;
         var screenpercent = 0.75;
         var roomAspec = [metreswidth,metresheight,metrewall,screenpercent];
@@ -534,7 +534,6 @@ function drawRect(){
     var pixelwidth = (cnv.width*screenpercent)+1;
 
 
-
     if (cnv.height*screenpercent <= pixelheight){
         var pixelheight = cnv.height*screenpercent;
         //var pixelwidth = pixelheight*(metreswidth/metresheight);
@@ -562,7 +561,12 @@ function drawRect(){
     console.log("pixelwall size: " + pixelwall);
 
 
-
+    c.beginPath();
+    c.fillStyle = "#000000";
+    c.stroke
+    c.fill();
+    c.closePath();
+    /*
     //this draws a rectangle that is the size specified + the wall thickness
     //and fills it in black
     c.beginPath();
@@ -579,7 +583,7 @@ function drawRect(){
     c.fill();
     c.closePath();
     c.stroke();
-
+    */
     //this is the four corners of where the room is meant to be
     //each of them are one metre long and as thick as the walls should be
     //they are put there for reference while editing other parts

@@ -562,6 +562,22 @@ def is_in_polygon(perimetre_coords,point):
         else:
             print ('No')"""
 
+def segmenting(coords):
+    segments = []
+    n = 0
+    while (len(coords) > n):
+
+        if (len(coords)-1 > n):
+            m = n + 1
+        if (len(coords)-1 == n):
+            m = 0
+       
+        segments.append([coords[n],coords[m]])
+
+        n = n + 1
+
+    return segments
+
 def extra_data_for_js(perimetre_coords,outer_perimetre_coords):
     lists = splitting_coords(outer_perimetre_coords)
     x_list = copy(lists[0])
@@ -575,16 +591,23 @@ def extra_data_for_js(perimetre_coords,outer_perimetre_coords):
     area = finding_area(lists)
     print("area: ", area)
 
+    perimetre_segments = segmenting(perimetre_coords)
+    out_perim_segments = segmenting(outer_perimetre_coords)
+
     class data_for_js:
         perimetre = 'this is where the perimetre should be'
         outer_perim = 'this is where the external perimetre should be'
         xy_max_lens = 'this is where the max lengths should be'
+        perimetre_segments = 'this is where the segments of the perimetre go'
+        outer_perim_segments = 'this is where the segments of the external perimetre go'
             
     #create object
     some_data_for_js = data_for_js()
     some_data_for_js.perimetre = copy(perimetre_coords)
     some_data_for_js.outer_perim = copy(outer_perimetre_coords)
     some_data_for_js.xy_max_lens = copy(max_lengths)
+    some_data_for_js.perimetre_segments = copy(perimetre_segments)
+    some_data_for_js.outer_perim_segments = copy(out_perim_segments)
 
     #convert to JSON string
     js_data = json.dumps(some_data_for_js.__dict__)
@@ -730,6 +753,10 @@ def outer_perimetre(perimetre_coords,wall_size):
 
         outer_perimetre_coords.append([x,y])
         n = n + 1
+    
+    outer_perimetre_coords.insert(0,(outer_perimetre_coords[len(outer_perimetre_coords)-1]))
+    outer_perimetre_coords.pop(len(outer_perimetre_coords)-1)
+    
     return outer_perimetre_coords
 
 def error_check(perimetre_coords):
@@ -899,7 +926,7 @@ def start_the_programe(box,features,year_built):
 
 
 
-#print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 
 
