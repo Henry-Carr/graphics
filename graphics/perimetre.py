@@ -904,8 +904,8 @@ def start_the_programe(box,features,year_built):
 
 
 #the thing that starts it on its own
-
-"""year_built = 2022
+"""
+year_built = 2022
 box = [20,20]
 features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
            ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
