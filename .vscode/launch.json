@@ -1,8 +1,9 @@
 {
     "configurations": [
+        
         {
-            "type": "pwa-chrome",
-            "name": "http://localhost:5000",
+            "type": "pwa-msedge",
+            "name": "localhost edge",
             "request": "launch",
             "url": "http://localhost:5000"
         }

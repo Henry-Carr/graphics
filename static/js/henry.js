@@ -560,12 +560,25 @@ function drawRect(){
     console.log("pixelheight height: " + pixelheight);
     console.log("pixelwall size: " + pixelwall);
 
+    c.translate(((cnv.width/2)-(pixelwidth/2)),((cnv.height/2)-(pixelheight/2)))
 
-    c.beginPath();
-    c.fillStyle = "#000000";
-    c.stroke
-    c.fill();
+    n = 0
+    while ((python_data[3].length) > n){
+        if ((python_data[3].length)-1 > n){
+            m = n + 1
+        }
+        if ((python_data[3].length)-1 == n){
+            m = 0
+        }
+        c.beginPath();
+        c.strokeStyle = "#ff0000";
+        c.moveTo(((((python_data[3])[n])[0])[0]*aspectratio),((((python_data[3])[n])[0])[1]*aspectratio));
+        c.lineTo(((((python_data[3])[m])[0])[0]*aspectratio),((((python_data[3])[m])[0])[1]*aspectratio));
+        c.stroke();
+        n = n + 1
+    }
     c.closePath();
+    c.translate(-((cnv.width/2)-(pixelwidth/2)),-((cnv.height/2)-(pixelheight/2)))
     /*
     //this draws a rectangle that is the size specified + the wall thickness
     //and fills it in black
@@ -674,7 +687,7 @@ function drawRect(){
 
 
 
-
+aaaaaaaaaahhhhhhhhhhhh = drawRect()
 
 
 
