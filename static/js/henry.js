@@ -38,7 +38,7 @@ function prepareDocument(){
 function formatting_from_python(){
     var values = document.getElementById("the data from python").innerHTML;
     values = JSON.parse(values);
-    var python_data = [values.perimetre,values.outer_perim,values.xy_max_lens,values.perimetre_segments,values.outer_perim_segments]
+    var python_data = [values.perimetre,values.outer_perim,values.xy_max_lens,values.perimetre_segments,values.outer_perim_segments,values.the_wall_size]
     console.log(python_data);
     return python_data
 }
@@ -457,7 +457,26 @@ function features(metreslongft,metreswideftA,metreswideftB,metreshyp,ang,metreso
     c.translate(-((cnv.width/2)-(pixelwidth/2)),-((cnv.height/2)-(pixelheight/2)))
 }
 
-
+function drawing_the_room(c,python_data,aspectratio,p,pixelwidth,pixelheight){
+    c.translate(((cnv.width/2)-(pixelwidth/2)),((cnv.height/2)-(pixelheight/2)))
+    n = 0
+    while ((python_data[p].length) > n){
+        if ((python_data[p].length)-1 > n){
+            m = n + 1
+        }
+        if ((python_data[p].length)-1 == n){
+            m = 0
+        }
+        c.beginPath();
+        c.strokeStyle = "#ff0000";
+        c.moveTo(((((python_data[p])[n])[0])[0]*aspectratio),((((python_data[p])[n])[0])[1]*aspectratio));
+        c.lineTo(((((python_data[p])[m])[0])[0]*aspectratio),((((python_data[p])[m])[0])[1]*aspectratio));
+        c.stroke();
+        n = n + 1
+    }
+    c.closePath();
+    c.translate(-((cnv.width/2)-(pixelwidth/2)),-((cnv.height/2)-(pixelheight/2)))
+}
 
 
 
@@ -560,25 +579,12 @@ function drawRect(){
     console.log("pixelheight height: " + pixelheight);
     console.log("pixelwall size: " + pixelwall);
 
-    c.translate(((cnv.width/2)-(pixelwidth/2)),((cnv.height/2)-(pixelheight/2)))
-
-    n = 0
-    while ((python_data[3].length) > n){
-        if ((python_data[3].length)-1 > n){
-            m = n + 1
-        }
-        if ((python_data[3].length)-1 == n){
-            m = 0
-        }
-        c.beginPath();
-        c.strokeStyle = "#ff0000";
-        c.moveTo(((((python_data[3])[n])[0])[0]*aspectratio),((((python_data[3])[n])[0])[1]*aspectratio));
-        c.lineTo(((((python_data[3])[m])[0])[0]*aspectratio),((((python_data[3])[m])[0])[1]*aspectratio));
-        c.stroke();
-        n = n + 1
+    p = 3
+    while (5 > p){
+        drawing_the_room(c,python_data,aspectratio,p,pixelwidth,pixelheight)
+        p = p + 1
     }
-    c.closePath();
-    c.translate(-((cnv.width/2)-(pixelwidth/2)),-((cnv.height/2)-(pixelheight/2)))
+    
     /*
     //this draws a rectangle that is the size specified + the wall thickness
     //and fills it in black
@@ -602,10 +608,10 @@ function drawRect(){
     //they are put there for reference while editing other parts
     c.beginPath();
     c.fillStyle = "#0000ff";
-    c.rect((cnv.width/2)-(pixelwidth/2)-(0*aspectratio),(cnv.height/2)-(pixelheight/2)-(0*aspectratio),(aspectratio),(aspectratio));
-    c.rect((cnv.width/2)+(pixelwidth/2)-(1*aspectratio),(cnv.height/2)-(pixelheight/2)-(0*aspectratio),(aspectratio),(aspectratio));
-    c.rect((cnv.width/2)+(pixelwidth/2)-(1*aspectratio),(cnv.height/2)+(pixelheight/2)-(1*aspectratio),(aspectratio),(aspectratio));
-    c.rect((cnv.width/2)-(pixelwidth/2)-(0*aspectratio),(cnv.height/2)+(pixelheight/2)-(1*aspectratio),(aspectratio),(aspectratio));
+    c.rect((cnv.width/2)-(pixelwidth/2)-(0*aspectratio)-(0*((python_data[5])[0])*aspectratio),(cnv.height/2)-(pixelheight/2)-(0*aspectratio)-(0*((python_data[5])[0])*aspectratio),(aspectratio),(aspectratio));
+    c.rect((cnv.width/2)+(pixelwidth/2)-(1*aspectratio)-(2*((python_data[5])[0])*aspectratio),(cnv.height/2)-(pixelheight/2)-(0*aspectratio)-(0*((python_data[5])[0])*aspectratio),(aspectratio),(aspectratio));
+    c.rect((cnv.width/2)+(pixelwidth/2)-(1*aspectratio)-(2*((python_data[5])[0])*aspectratio),(cnv.height/2)+(pixelheight/2)-(1*aspectratio)-(2*((python_data[5])[0])*aspectratio),(aspectratio),(aspectratio));
+    c.rect((cnv.width/2)-(pixelwidth/2)-(0*aspectratio)-(0*((python_data[5])[0])*aspectratio),(cnv.height/2)+(pixelheight/2)-(1*aspectratio)-(2*((python_data[5])[0])*aspectratio),(aspectratio),(aspectratio));
 
     /*
     c.rect((cnv.width/2)-(pixelwidth/2)-(0*aspectratio),(cnv.height/2)-(pixelheight/2)-(0*pixelwall),(aspectratio),(pixelwall));

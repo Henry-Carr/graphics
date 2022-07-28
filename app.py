@@ -9,8 +9,10 @@ def drawing():
    
    year_built = 2022
    box = [20,20]
-   features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
-             ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
+   #features = []
+   features = [[0, 0, 0, 25, 5, 5, 4, 0, 0, "triangle feature thing1", ""]]
+   #features = [[0, 0, 0, 45, 5, 15, 14, 0, 0, "triangle feature thing1", ""]
+   #          ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
    js_data = start_the_programe(box,features,year_built)
    print(js_data)
    return render_template('drawing.html', value=js_data)

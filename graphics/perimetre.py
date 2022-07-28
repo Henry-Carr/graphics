@@ -578,15 +578,15 @@ def segmenting(coords):
 
     return segments
 
-def extra_data_for_js(perimetre_coords,outer_perimetre_coords):
-    lists = splitting_coords(outer_perimetre_coords)
+def extra_data_for_js(perimetre_coords,outer_perimetre_coords,wall_size):
+    lists = splitting_coords(perimetre_coords)
     x_list = copy(lists[0])
     y_list = copy(lists[1])
     x_list.sort()
     y_list.sort()
     max_lengths = []
-    max_lengths.append(math.dist([x_list[0]],[x_list[len(x_list)-1]]))
-    max_lengths.append(math.dist([y_list[0]],[y_list[len(y_list)-1]]))
+    max_lengths.append((math.dist([x_list[0]],[x_list[len(x_list)-1]])) + (2*wall_size[0]))
+    max_lengths.append((math.dist([y_list[0]],[y_list[len(y_list)-1]])) + (2*wall_size[0]))
 
     area = finding_area(lists)
     print("area: ", area)
@@ -600,6 +600,7 @@ def extra_data_for_js(perimetre_coords,outer_perimetre_coords):
         xy_max_lens = 'this is where the max lengths should be'
         perimetre_segments = 'this is where the segments of the perimetre go'
         outer_perim_segments = 'this is where the segments of the external perimetre go'
+        the_wall_size = 'this is where the size of the wall should be'
             
     #create object
     some_data_for_js = data_for_js()
@@ -608,6 +609,7 @@ def extra_data_for_js(perimetre_coords,outer_perimetre_coords):
     some_data_for_js.xy_max_lens = copy(max_lengths)
     some_data_for_js.perimetre_segments = copy(perimetre_segments)
     some_data_for_js.outer_perim_segments = copy(out_perim_segments)
+    some_data_for_js.the_wall_size = copy(wall_size)
 
     #convert to JSON string
     js_data = json.dumps(some_data_for_js.__dict__)
@@ -908,7 +910,7 @@ def start_the_programe(box,features,year_built):
     is_in_polygon(perimetre_coords,point)
 
 
-    js_prmtr_crds = extra_data_for_js(perimetre_coords,outer_perimetre_coords)
+    js_prmtr_crds = extra_data_for_js(perimetre_coords,outer_perimetre_coords,wall_size)
     js_data = js_prmtr_crds[0]
     perimetre_coords = js_prmtr_crds[1]
 
