@@ -31,18 +31,6 @@ import math
 import json
 from re import U
 
-def initial_perim(length,width):
-    """
-    perimetre_coords = []
-    perimetre_coords.append([0, 0])
-    perimetre_coords.append([length, 0])
-    perimetre_coords.append([length,width])
-    perimetre_coords.append([0,width])"""
-
-    walls_feature = [0, 0, 0, 0, length, width, width, 0, 0, "walls", ""]
-
-    return walls_feature
-
 def perimetre_length(perimetre_coords,upto_point):
     if (upto_point <= 0):
         array_length = len(perimetre_coords)
@@ -70,12 +58,13 @@ def direction_check(perimetre_coords,n):
     # for all but the last coordinate
     if (len(perimetre_coords)-1 > n):
         m = n+1
-    # linking the last coordinate to [0,0]
+    # linking the last coordinate to the first coordinate
     if ((n == len(perimetre_coords)-1) or (len(perimetre_coords) == 1)):
         m = 0
     if (n == len(perimetre_coords)):
         n = 0
         m = n + 1
+    
     #special case where x and y is the same
     if (((perimetre_coords[n])[0] == (perimetre_coords[m])[0]) and ((perimetre_coords[n])[1] == (perimetre_coords[m])[1])):
         direction = [0,((0*math.pi)/2)]
@@ -184,23 +173,23 @@ def offset_length_fit_check(perimetre_coords,feature):
     walls = []
     n = 0
     if (len(perimetre_coords)-1 > n):
-        m = n
+        m = n+1
     if (n == len(perimetre_coords)-1):
-        m = -1
-    while (target_offset+feature[4] > math.dist(perimetre_coords[n],perimetre_coords[m+1])):
-        target_offset = target_offset - math.dist(perimetre_coords[n],perimetre_coords[m+1])
+        m = 0
+    while (target_offset+feature[4] > math.dist(perimetre_coords[n],perimetre_coords[m])):
+        target_offset = target_offset - math.dist(perimetre_coords[n],perimetre_coords[m])
         walls.append(0)
         n = n + 1
 
         if (len(perimetre_coords)-1 > n):
-            m = n
+            m = n+1
         if (n == len(perimetre_coords)-1):
-            m = -1
+            m = 0
     walls.append(1)
     walls_target_offset = [walls,target_offset]
     return walls_target_offset
 
-def first_free_decider(walls,fits):
+def first_free_decider(walls,fits,target_offset):
     n = 0
     for x in walls:
         if (x == 1):
@@ -215,60 +204,22 @@ def first_free_decider(walls,fits):
             else:
                 n = n + 1
         first_free = True
+    if (target_offset <= 0):
+        first_free = True
     n_first_free = [n,first_free]
     return n_first_free
 
-def axis_variables_setter(rotation_state,target_offset,feature,first_free,rotation):
-    if (first_free == True):
-        target_offset = 0
+def rotation_for_walls(rotation_state,rotation):
+    if (rotation_state == 1):
+        rotation = rotation + ((0*math.pi)/2)
+    if (rotation_state == 3):
+        rotation = rotation + ((1*math.pi)/2)
+    if (rotation_state == 5):
+        rotation = rotation + ((2*math.pi)/2)
+    if (rotation_state == 7):
+        rotation = rotation + ((3*math.pi)/2)
 
-    if ((rotation_state == 0) or (rotation_state == 1)):
-        target_offsetx = target_offset
-        target_offsety = 0
-        lengthx  = feature[4]
-        lengthy  = 0
-        height1x = 0
-        height1y = feature[5]
-        height2x = 0
-        height2y = feature[6]
-        rotation = rotation - ((0*math.pi)/4)
-    if ((rotation_state == 2) or (rotation_state == 3)):
-        target_offsetx = 0
-        target_offsety = target_offset
-        lengthx  = 0
-        lengthy  = feature[4]
-        height1x = feature[5]*-1
-        height1y = 0
-        height2x = feature[6]*-1
-        height2y = 0
-        rotation = rotation - ((1*math.pi)/4)
-    if ((rotation_state == 4) or (rotation_state == 5)):
-        target_offsetx = target_offset*-1
-        target_offsety = 0
-        lengthx  = feature[4]
-        lengthy  = 0
-        height1x = 0
-        height1y = feature[5]*-1
-        height2x = 0
-        height2y = feature[6]*-1
-        rotation = rotation - ((2*math.pi)/4)
-    if ((rotation_state == 6) or (rotation_state == 7)):
-        target_offsetx = 0
-        target_offsety = target_offset*-1
-        lengthx  = 0
-        lengthy  = feature[4]*-1
-        height1x = feature[5]
-        height1y = 0
-        height2x = feature[6]
-        height2y = 0
-        rotation = rotation - ((4*math.pi)/4)
-    target_offset   = [target_offsetx,target_offsety]
-    length          = [lengthx,lengthy]
-    height1         = [height1x,height1y]
-    height2         = [height2x,height2y]
-    rotationlist    = [rotation]
-    trgt_lngth_hght1_hght2 = [target_offset,length,height1,height2,rotationlist]
-    return trgt_lngth_hght1_hght2
+    return rotation
 
 def remove_both_duplicates(perimetre_coords):
     n = 0
@@ -297,60 +248,49 @@ def rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotati
     rotation_list = [[],[],[],[]]
 
     if (new_walls == True):
+        p = -1
         a = 3
         b = 2
         c = 1
         d = 0
     if (new_walls == False):
+        p = -1
         a = 0
         b = 1
         c = 2
         d = 3
+        
+    
 
     #x' = x*cos(θ)  +  y*sin(θ)
     #y' = y*cos(θ)  -  x*sin(θ)
 
-    rotation_list[a].append((perimetre_coords[n])[0]+(((target_offset[0])*math.cos(-(rotation))) + ((target_offset[1])*math.sin(-(rotation)))))
-    rotation_list[a].append((perimetre_coords[n])[1]+(((target_offset[1])*math.cos(-(rotation))) - ((target_offset[0])*math.sin(-(rotation)))))
+    rotation_list[a].append((perimetre_coords[n])[0]+(((target_offset)*(round(math.cos(-(rotation)),10))) + ((0)            *math.sin(-(rotation)))))
+    rotation_list[a].append((perimetre_coords[n])[1]+(((0)            *(round(math.cos(-(rotation)),10))) - ((target_offset)*math.sin(-(rotation)))))
 
-    rotation_list[b].append((perimetre_coords[n])[0]+(((target_offset[0]+height1[0])*math.cos(-(rotation))) + ((target_offset[1]+height1[1])*math.sin(-(rotation)))))
-    rotation_list[b].append((perimetre_coords[n])[1]+(((target_offset[1]+height1[1])*math.cos(-(rotation))) - ((target_offset[0]+height1[0])*math.sin(-(rotation)))))
+    rotation_list[b].append((perimetre_coords[n])[0]+(((target_offset)*(round(math.cos(-(rotation)),10))) + (((-height1)*p) *math.sin(-(rotation)))))
+    rotation_list[b].append((perimetre_coords[n])[1]+((((-height1)*p) *(round(math.cos(-(rotation)),10))) - ((target_offset)*math.sin(-(rotation)))))
 
-    rotation_list[c].append((perimetre_coords[n])[0]+(((target_offset[0]+height2[0]+length[0])*math.cos(-(rotation))) + ((target_offset[1]+height2[1]+length[1])*math.sin(-(rotation)))))
-    rotation_list[c].append((perimetre_coords[n])[1]+(((target_offset[1]+height2[1]+length[1])*math.cos(-(rotation))) - ((target_offset[0]+height2[0]+length[0])*math.sin(-(rotation)))))
+    rotation_list[c].append((perimetre_coords[n])[0]+(((target_offset+length)*(round(math.cos(-(rotation)),10))) + (((-height2)*p)        *math.sin(-(rotation)))))
+    rotation_list[c].append((perimetre_coords[n])[1]+((((-height2)*p)        *(round(math.cos(-(rotation)),10))) - ((target_offset+length)*math.sin(-(rotation)))))
 
-    rotation_list[d].append((perimetre_coords[n])[0]+(((target_offset[0]+length[0])*math.cos(-(rotation))) + ((target_offset[1]+length[1])*math.sin(-(rotation)))))
-    rotation_list[d].append((perimetre_coords[n])[1]+(((target_offset[1]+length[1])*math.cos(-(rotation))) - ((target_offset[0]+length[0])*math.sin(-(rotation)))))
+    rotation_list[d].append((perimetre_coords[n])[0]+(((target_offset+length)*(round(math.cos(-(rotation)),10))) + ((0)                   *math.sin(-(rotation)))))
+    rotation_list[d].append((perimetre_coords[n])[1]+(((0)                   *(round(math.cos(-(rotation)),10))) - ((target_offset+length)*math.sin(-(rotation)))))
 
-    feature_Coords = remove_one_duplicates(rotation_list)
-    return feature_Coords
 
-def adding_feature_coords(perimetre_coords,n,target_offset,feature,first_free,new_walls):
-    direction = direction_check(perimetre_coords,n)
-    direction_words(direction)
-    
-    rotation_state = direction[0]
-    rotation = direction[1]
-    trgt_lngth_hght1_hght2 = axis_variables_setter(rotation_state,target_offset,feature,first_free,rotation)
-    target_offset   = trgt_lngth_hght1_hght2[0]
-    length          = trgt_lngth_hght1_hght2[1]
-    height1         = trgt_lngth_hght1_hght2[2]
-    height2         = trgt_lngth_hght1_hght2[3]
-    rotation        = (trgt_lngth_hght1_hght2[4])[0]
+    """
+    rotation_list[a].append((perimetre_coords[n])[0]+(((target_offset[0])*(round(math.cos(-(rotation)),10))) + ((target_offset[1])*math.sin(-(rotation)))))
+    rotation_list[a].append((perimetre_coords[n])[1]+(((target_offset[1])*(round(math.cos(-(rotation)),10))) - ((target_offset[0])*math.sin(-(rotation)))))
 
-    feature_Coords = rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation,new_walls)
+    rotation_list[b].append((perimetre_coords[n])[0]+(((target_offset[0]+height1[0])*(round(math.cos(-(rotation)),10))) + ((target_offset[1]+height1[1])*math.sin(-(rotation)))))
+    rotation_list[b].append((perimetre_coords[n])[1]+(((target_offset[1]+height1[1])*(round(math.cos(-(rotation)),10))) - ((target_offset[0]+height1[0])*math.sin(-(rotation)))))
 
-    m = 0
-    while (len(feature_Coords) > m):
-        xy1 = feature_Coords[m]
-        perimetre_coords.insert(n+1,xy1)
-        n = n + 1
-        m = m + 1
-    if (new_walls == False):
-        perimetre_coords = remove_both_duplicates(perimetre_coords)
-    if (new_walls == True):
-        perimetre_coords = remove_one_duplicates(perimetre_coords)
-    return perimetre_coords
+    rotation_list[c].append((perimetre_coords[n])[0]+(((target_offset[0]+height2[0]+length[0])*(round(math.cos(-(rotation)),10))) + ((target_offset[1]+height2[1]+length[1])*math.sin(-(rotation)))))
+    rotation_list[c].append((perimetre_coords[n])[1]+(((target_offset[1]+height2[1]+length[1])*(round(math.cos(-(rotation)),10))) - ((target_offset[0]+height2[0]+length[0])*math.sin(-(rotation)))))
+
+    rotation_list[d].append((perimetre_coords[n])[0]+(((target_offset[0]+length[0])*(round(math.cos(-(rotation)),10))) + ((target_offset[1]+length[1])*math.sin(-(rotation)))))
+    rotation_list[d].append((perimetre_coords[n])[1]+(((target_offset[1]+length[1])*(round(math.cos(-(rotation)),10))) - ((target_offset[0]+length[0])*math.sin(-(rotation)))))"""
+    return rotation_list
 
 def rounding_outputs(coords):
     n = 0
@@ -359,6 +299,48 @@ def rounding_outputs(coords):
         (coords[n])[1] = round((coords[n])[1],5)
         n = n + 1
     return coords
+
+def adding_feature_coords(perimetre_coords,n,target_offset,feature,first_free,new_walls):
+    direction = direction_check(perimetre_coords,n)
+    direction_words(direction)
+    
+    rotation_state = direction[0]
+    rotation = direction[1]
+    rotation = rotation_for_walls(rotation_state,rotation)
+
+    """trgt_lngth_hght1_hght2 = axis_variables_setter(rotation_state,target_offset,feature,first_free,rotation)
+    target_offset   = trgt_lngth_hght1_hght2[0]
+    length          = trgt_lngth_hght1_hght2[1]
+    height1         = trgt_lngth_hght1_hght2[2]
+    height2         = trgt_lngth_hght1_hght2[3]
+    #rotation        = (trgt_lngth_hght1_hght2[4])[0]"""
+    if (first_free == True):
+        target_offset = 0
+    length            = feature[4]
+    height1           = feature[5]
+    height2           = feature[6]
+
+    
+    feature_Coords = rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation,new_walls)
+
+    feature_Coords = rounding_outputs(feature_Coords)
+    
+    feature_Coords = remove_one_duplicates(feature_Coords)
+
+    
+
+    m = 0
+    while (len(feature_Coords) > m):
+        xy1 = feature_Coords[m]
+        perimetre_coords.insert(n+1,xy1)
+        n = n + 1
+        m = m + 1
+
+    if (new_walls == False):
+        perimetre_coords = remove_both_duplicates(perimetre_coords)
+    if (new_walls == True):
+        perimetre_coords = remove_one_duplicates(perimetre_coords)
+    return perimetre_coords
 
 def splitting_coords(perimetre_coords):
     n = 0
@@ -393,174 +375,6 @@ def finding_area(lists):
 
     area = abs(sum/2)
     return area
-
-def is_in_polygon(perimetre_coords,point):
-    # A Python3 program to check if a given point 
-    # lies inside a given polygon
-    # Refer https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-    # for explanation of functions onSegment(),
-    # orientation() and doIntersect() 
-    
-    # Define Infinite (Using INT_MAX 
-    # caused overflow problems)
-    INT_MAX = 40075017
-    
-    # Given three collinear points p, q, r, 
-    # the function checks if point q lies
-    # on line segment 'pr'
-    def onSegment(p:tuple, q:tuple, r:tuple) -> bool:
-        
-        if ((q[0] <= max(p[0], r[0])) &
-            (q[0] >= min(p[0], r[0])) &
-            (q[1] <= max(p[1], r[1])) &
-            (q[1] >= min(p[1], r[1]))):
-            return True
-            
-        return False
-    
-    # To find orientation of ordered triplet (p, q, r).
-    # The function returns following values
-    # 0 --> p, q and r are collinear
-    # 1 --> Clockwise
-    # 2 --> Counterclockwise
-    def orientation(p:tuple, q:tuple, r:tuple) -> int:
-        
-        val = (((q[1] - p[1]) *
-                (r[0] - q[0])) -
-            ((q[0] - p[0]) *
-                (r[1] - q[1])))
-                
-        if val == 0:
-            return 0
-        if val > 0:
-            return 1 # Collinear
-        else:
-            return 2 # Clock or counterclock
-    
-    def doIntersect(p1, q1, p2, q2):
-        
-        # Find the four orientations needed for 
-        # general and special cases
-        o1 = orientation(p1, q1, p2)
-        o2 = orientation(p1, q1, q2)
-        o3 = orientation(p2, q2, p1)
-        o4 = orientation(p2, q2, q1)
-    
-        # General case
-        if (o1 != o2) and (o3 != o4):
-            return True
-        
-        # Special Cases
-        # p1, q1 and p2 are collinear and
-        # p2 lies on segment p1q1
-        if (o1 == 0) and (onSegment(p1, p2, q1)):
-            return True
-    
-        # p1, q1 and p2 are collinear and
-        # q2 lies on segment p1q1
-        if (o2 == 0) and (onSegment(p1, q2, q1)):
-            return True
-    
-        # p2, q2 and p1 are collinear and
-        # p1 lies on segment p2q2
-        if (o3 == 0) and (onSegment(p2, p1, q2)):
-            return True
-    
-        # p2, q2 and q1 are collinear and
-        # q1 lies on segment p2q2
-        if (o4 == 0) and (onSegment(p2, q1, q2)):
-            return True
-    
-        return False
-    
-    # Returns true if the point p lies 
-    # inside the polygon[] with n vertices
-    def is_inside_polygon(points:list, p:tuple) -> bool:
-        
-        n = len(points)
-        
-        # There must be at least 3 vertices
-        # in polygon
-        if n < 3:
-            return False
-            
-        # Create a point for line segment
-        # from p to infinite
-        extreme = (INT_MAX, p[1])
-        count = i = 0
-        
-        while True:
-            next = (i + 1) % n
-            
-            # Check if the line segment from 'p' to 
-            # 'extreme' intersects with the line 
-            # segment from 'polygon[i]' to 'polygon[next]'
-            if (doIntersect(points[i],
-                            points[next],
-                            p, extreme)):
-                                
-                # If the point 'p' is collinear with line 
-                # segment 'i-next', then check if it lies 
-                # on segment. If it lies, return true, otherwise false
-                if orientation(points[i], p,
-                            points[next]) == 0:
-                    return onSegment(points[i], p,
-                                    points[next])
-                                    
-                count += 1
-                
-            i = next
-            
-            if (i == 0):
-                break
-            
-        # Return true if count is odd, false otherwise
-        return (count % 2 == 1)
-    
-    # Driver code
-    if __name__ == '__main__':
-        ###################################################################################### this is where to add the perimetre chords and points
-        polygon1 = perimetre_coords
-        
-        p = point
-        if (is_inside_polygon(points = polygon1, p = p)):
-            print ('Yes')
-        else:
-            print ('No')
-        
-        """p = (5, 5)
-        if (is_inside_polygon(points = polygon1, p = p)):
-            print ('Yes')
-        else:
-            print ('No')
-    
-        polygon2 = [ (0, 0), (5, 0), (5, 5), (3, 3) ]
-        
-        p = (3, 3)
-        if (is_inside_polygon(points = polygon2, p = p)):
-            print ('Yes')
-        else:
-            print ('No')
-        
-        p = (5, 1)
-        if (is_inside_polygon(points = polygon2, p = p)):
-            print ('Yes')
-        else:
-            print ('No')
-        
-        p = (8, 1)
-        if (is_inside_polygon(points = polygon2, p = p)):
-            print ('Yes')
-        else:
-            print ('No')
-        
-        polygon3 = [ (0, 0), (10, 0), (10, 10), (0, 10) ]
-        
-        p = (-1, 10)
-        if (is_inside_polygon(points = polygon3, p = p)):
-            print ('Yes')
-        else:
-            print ('No')"""
 
 def segmenting(coords):
     segments = []
@@ -637,18 +451,20 @@ def feature_coords(feature,perimetre_coords):
         sum = sum + fits[n]
         n = n + 1
     if (sum != 0):
-        print("it can start drawing the feature")
 
         walls_target_offset = offset_length_fit_check(perimetre_coords,feature)
         walls = walls_target_offset[0]
         target_offset = walls_target_offset[1]
 
-        n_first_free = first_free_decider(walls,fits)
+        n_first_free = first_free_decider(walls,fits,target_offset)
         n = n_first_free[0]
         first_free = n_first_free[1]
 
         if (fits[n] == 1):
+
+            print("it can start drawing the feature")
             new_walls = False
+
             perimetre_coords = adding_feature_coords(perimetre_coords,n,target_offset,feature,first_free,new_walls)
         return perimetre_coords
 
@@ -677,32 +493,32 @@ def outer_offset_coords(angle,coord_pair,wall_size):
             y = (coords[1]) - (wall_size[0])
 
         if (angle[0] == 1):
-            x = (coords[0]) + (wall_size[0]/math.sin((math.pi/2)-(angle[1])))
-            y = (coords[1]) - (wall_size[0]/math.cos((math.pi/2)-(angle[1])))
+            x = (coords[0]) + (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
+            y = (coords[1]) - (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
             
         if (angle[0] == 2):
             x = (coords[0]) + (wall_size[0])
             y = (coords[1])
             
         if (angle[0] == 3):
-            x = (coords[0]) + (wall_size[0])/math.sin((math.pi/2)-(angle[1]))
-            y = (coords[1]) + (wall_size[0])/math.cos((math.pi/2)-(angle[1]))
+            x = (coords[0]) + (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
+            y = (coords[1]) + (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
             
         if (angle[0] == 4):
             x = (coords[0])
             y = (coords[1]) + (wall_size[0])
             
         if (angle[0] == 5):
-            x = (coords[0]) - (wall_size[0])/math.sin((math.pi/2)-(angle[1]))
-            y = (coords[1]) + (wall_size[0])/math.cos((math.pi/2)-(angle[1]))
+            x = (coords[0]) - (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
+            y = (coords[1]) + (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
             
         if (angle[0] == 6):
             x = (coords[0]) - (wall_size[0])
             y = (coords[1])
             
         if (angle[0] == 7):
-            x = (coords[0]) - (wall_size[0])/math.sin((math.pi/2)-(angle[1]))
-            y = (coords[1]) - (wall_size[0])/math.sin((math.pi/2)-(angle[1]))
+            x = (coords[0]) - (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
+            y = (coords[1]) - (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
         
         coord_pair[n] = [x,y]
         n = n + 1
@@ -761,129 +577,9 @@ def outer_perimetre(perimetre_coords,wall_size):
     
     return outer_perimetre_coords
 
-def error_check(perimetre_coords):
-    def intersection_error(perimetre_coords):
-        class Point:
-            def __init__(self, x, y):
-                    self.x = x
-                    self.y = y
-        
-        # Given three collinear points p, q, r, the function checks if 
-        # point q lies on line segment 'pr' 
-        def onSegment(p, q, r):
-            if ( (q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and 
-                (q.y <= max(p.y, r.y)) and (q.y >= min(p.y, r.y))):
-                return True
-            return False
-        
-        def orientation(p, q, r):
-            # to find the orientation of an ordered triplet (p,q,r)
-            # function returns the following values:
-            # 0 : Collinear points
-            # 1 : Clockwise points
-            # 2 : Counterclockwise
-            
-            # See https://www.geeksforgeeks.org/orientation-3-ordered-points/amp/ 
-            # for details of below formula. 
-            
-            val = (float(q.y - p.y) * (r.x - q.x)) - (float(q.x - p.x) * (r.y - q.y))
-            if (val > 0):
-                
-                # Clockwise orientation
-                return 1
-            elif (val < 0):
-                
-                # Counterclockwise orientation
-                return 2
-            else:
-                
-                # Collinear orientation
-                return 0
-        
-        # The main function that returns true if 
-        # the line segment 'p1q1' and 'p2q2' intersect.
-        def doIntersect(p1,q1,p2,q2):
-            
-            # Find the 4 orientations required for 
-            # the general and special cases
-            o1 = orientation(p1, q1, p2)
-            o2 = orientation(p1, q1, q2)
-            o3 = orientation(p2, q2, p1)
-            o4 = orientation(p2, q2, q1)
-        
-            # General case
-            if ((o1 != o2) and (o3 != o4)):
-                return True
-        
-            # Special Cases
-        
-            # p1 , q1 and p2 are collinear and p2 lies on segment p1q1
-            if ((o1 == 0) and onSegment(p1, p2, q1)):
-                return True
-        
-            # p1 , q1 and q2 are collinear and q2 lies on segment p1q1
-            if ((o2 == 0) and onSegment(p1, q2, q1)):
-                return True
-        
-            # p2 , q2 and p1 are collinear and p1 lies on segment p2q2
-            if ((o3 == 0) and onSegment(p2, p1, q2)):
-                return True
-        
-            # p2 , q2 and q1 are collinear and q1 lies on segment p2q2
-            if ((o4 == 0) and onSegment(p2, q1, q2)):
-                return True
-        
-            # If none of the cases
-            return False
-        
-        # Driver program to test above functions:
-        
-        n = 0
-        while (len(perimetre_coords) > n):
-            m = 0
-            while (len(perimetre_coords) > m):
-                if (n == m):
-                    m = n + 1
-                if (m == len(perimetre_coords)):
-                    break
-                if ((len(perimetre_coords) > n) and (len(perimetre_coords) > m)):
-                    p1 = perimetre_coords[n]
-                    q1 = perimetre_coords[n+1]
-                    p2 = perimetre_coords[m]
-                    q2 = perimetre_coords[m+1]
-                    if doIntersect(p1, q1, p2, q2):
-                       return True
-                    else:
-                        return False
-                m = m + 1
-            n = n + 1   
-        """p1 = Point(10, 0)
-        q1 = Point(0, 10)
-        p2 = Point(0, 0)
-        q2 = Point(10,10)
-        
-        if doIntersect(p1, q1, p2, q2):
-            print("Yes")
-        else:
-            print("No")
-        
-        p1 = Point(-5,-5)
-        q1 = Point(0, 0)
-        p2 = Point(1, 1)
-        q2 = Point(10, 10)
-        
-        if doIntersect(p1, q1, p2, q2):
-            print("Yes")
-        else:
-            print("No")
-    #if (intersection_error(perimetre_coords) == True):
-    #    print("INTERSECTION ERROR STOP!!!!!!!!!!!!!!!!!!!!!!!")
-    #else:
-    #    print("no intersection error")"""
-
 def start_the_programe(box,features,year_built):
-    walls_feature=initial_perim(box[0],box[1])
 
+    walls_feature = [0, 0, 0, 0, box[0], box[1], box[1], 0, 0, "walls", ""]
     features.insert(0,walls_feature)
 
     perimetre_coords = [[0,0]]
@@ -892,9 +588,11 @@ def start_the_programe(box,features,year_built):
     while (n < len(features)):
         if ((features[n])[0] == 0):
             print("the feature is a triangle or rectangle thing")
+
             perimetre_coords = feature_coords(features[n],perimetre_coords)
+
             perimetre_coords = rounding_outputs(perimetre_coords)
-            error_check(perimetre_coords)
+
         print (perimetre_coords)
         print("room perimetre: ", perimetre_length(perimetre_coords,0)[0])
 
@@ -903,11 +601,12 @@ def start_the_programe(box,features,year_built):
 
     wall_size = wall_thickness(year_built)
     outer_perimetre_coords = outer_perimetre(perimetre_coords,wall_size)
+    #outer_perimetre_coords = outer_perimetre(perimetre_coords,wall_size)
     outer_perimetre_coords = rounding_outputs(outer_perimetre_coords)
 
-    point = [200,5]
+
     print(perimetre_coords)
-    is_in_polygon(perimetre_coords,point)
+    print(outer_perimetre_coords)
 
 
     js_prmtr_crds = extra_data_for_js(perimetre_coords,outer_perimetre_coords,wall_size)
@@ -936,8 +635,13 @@ print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 """
 year_built = 2022
 box = [20,20]
-features = [[0, 0, 0, 7, 3, 0, 4, 0, 0, "triangle feature thing1", ""]
-           ,[0, 0, 0, 8, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
+#features = [[0, 0, 0, 10, 10, 0, 10, 0, 0, "triangle feature thing1", ""]]
+features = [[0, 0, 0, 70, 7, 7, 7, 0, 0, "triangle feature thing1", ""]
+           ,[0, 0, 0, 50, 5, 5, 5, 0, 0, "triangle feature thing2", ""]
+           ,[0, 0, 0, 30, 3, 3, 3, 0, 0, "triangle feature thing3", ""]
+           ,[0, 0, 0, 10, 1, 1, 1, 0, 0, "triangle feature thing4", ""]]
+#features = [[0, 0, 0, 10, 10, 0, 10, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 0, 15, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 #features = [[0, 0, 0, 15, 5, 0, 5, 0, 0, "triangle feature thing1", ""]]
 
 room_output = start_the_programe(box,features,year_built)"""
