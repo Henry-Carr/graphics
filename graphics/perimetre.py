@@ -623,7 +623,7 @@ def start_the_programe(box,features,year_built):
 
 
 
-
+# still need to fix outer perimetre maths
 
 
 
