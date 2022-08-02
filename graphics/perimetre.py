@@ -5,7 +5,7 @@
 #
 #
 # feature format
-# [type, subtype, subsubtype, offset, length, height1, height2, inward, inneroffset]
+# [typelist, subtype, offset, length, height1, height2, inward, side, inneroffset, name, leadingto]
 #
 # types
 # 1) feature
@@ -136,7 +136,7 @@ def direction_words(direction):
         print("right up ", direction[1])
 
 def fit_check(feature,perimetre_coords):
-    # feature[4] is a real number that represents the length of the feature that may be added.
+    # feature[3] is a real number that represents the length of the feature that may be added.
     # this runs a while loop to check if the length of that feature fits between any of the coordinates in the perimetre.  
     n = 0
     fits = []
@@ -150,7 +150,7 @@ def fit_check(feature,perimetre_coords):
         # and appends fits a 1 if the length does fit and a 0 if it doesnt
             m = -1
         
-        if (feature[4] >= math.dist((perimetre_coords[n]), (perimetre_coords[m+1]))):
+        if (feature[3] >= math.dist((perimetre_coords[n]), (perimetre_coords[m+1]))):
             print("the length doesnt fit")
             fits.append(0)
         else:
@@ -169,14 +169,14 @@ def fit_check(feature,perimetre_coords):
     return fits
 
 def offset_length_fit_check(perimetre_coords,feature):
-    target_offset = feature[3]
+    target_offset = feature[2]
     walls = []
     n = 0
     if (len(perimetre_coords)-1 > n):
         m = n+1
     if (n == len(perimetre_coords)-1):
         m = 0
-    while (target_offset+feature[4] > math.dist(perimetre_coords[n],perimetre_coords[m])):
+    while (target_offset+feature[3] > math.dist(perimetre_coords[n],perimetre_coords[m])):
         target_offset = target_offset - math.dist(perimetre_coords[n],perimetre_coords[m])
         walls.append(0)
         n = n + 1
@@ -316,9 +316,9 @@ def adding_feature_coords(perimetre_coords,n,target_offset,feature,first_free,ne
     #rotation        = (trgt_lngth_hght1_hght2[4])[0]"""
     if (first_free == True):
         target_offset = 0
-    length            = feature[4]
-    height1           = feature[5]
-    height2           = feature[6]
+    length            = feature[3]
+    height1           = feature[4]
+    height2           = feature[5]
 
     
     feature_Coords = rotation_trig(perimetre_coords,n,target_offset,length,height1,height2,rotation,new_walls)
@@ -434,7 +434,7 @@ def extra_data_for_js(perimetre_coords,outer_perimetre_coords,wall_size):
     return js_prmtr_crds
 
 def feature_coords(feature,perimetre_coords):
-    #feature = [typelist, subtype, subsubtype, offset, length, height1, height2, inward, inneroffset, name, leadingto]
+    #feature = [typelist, subtype, offset, length, height1, height2, inward, side, inneroffset, name, leadingto]
     
     if (len(perimetre_coords) == 1):
         n = 0
@@ -466,6 +466,7 @@ def feature_coords(feature,perimetre_coords):
             new_walls = False
 
             perimetre_coords = adding_feature_coords(perimetre_coords,n,target_offset,feature,first_free,new_walls)
+        
         return perimetre_coords
 
 def wall_thickness(year_built):
@@ -488,38 +489,38 @@ def outer_offset_coords(angle,coord_pair,wall_size):
     n = 0
     while (len(coord_pair) > n):
         coords = coord_pair[n]
-        
+
         if (angle[0] == 0):
             x = (coords[0])
             y = (coords[1]) - (wall_size[0])
 
         if (angle[0] == 1):
-            x = (coords[0]) + ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
-            y = (coords[1]) - ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
+            x = (coords[0]) + ((wall_size[0])*(math.cos((math.pi/2)-angle[1])))
+            y = (coords[1]) - ((wall_size[0])*(math.sin((math.pi/2)-angle[1])))
             
         if (angle[0] == 2):
             x = (coords[0]) + (wall_size[0])
             y = (coords[1])
             
         if (angle[0] == 3):
-            x = (coords[0]) + ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
-            y = (coords[1]) + ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
+            x = (coords[0]) + ((wall_size[0])*(math.cos((math.pi/2)-angle[1])))
+            y = (coords[1]) + ((wall_size[0])*(math.sin((math.pi/2)-angle[1])))
             
         if (angle[0] == 4):
             x = (coords[0])
             y = (coords[1]) + (wall_size[0])
             
         if (angle[0] == 5):
-            x = (coords[0]) - ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
-            y = (coords[1]) + ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
+            x = (coords[0]) - ((wall_size[0])*(math.cos((math.pi/2)-angle[1])))
+            y = (coords[1]) + ((wall_size[0])*(math.sin((math.pi/2)-angle[1])))
             
         if (angle[0] == 6):
             x = (coords[0]) - (wall_size[0])
             y = (coords[1])
             
         if (angle[0] == 7):
-            x = (coords[0]) - ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
-            y = (coords[1]) - ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
+            x = (coords[0]) - ((wall_size[0])*(math.cos((math.pi/2)-angle[1])))
+            y = (coords[1]) - ((wall_size[0])*(math.sin((math.pi/2)-angle[1])))
         
         coord_pair[n] = [x,y]
         n = n + 1
@@ -562,11 +563,13 @@ def outer_perimetre(perimetre_coords,wall_size):
         d = coord_pair[1]
 
 
-        t = ((((a[0]-c[0])*(c[1]-d[1]))-((a[1]-c[1])*(c[0]-d[0])))/(((a[0]-b[0])*(c[1]-d[1]))-((a[1]-b[1])*(c[0]-d[0]))))
+        t = ((((a[0]-c[0])*(c[1]-d[1]))-((a[1]-c[1])*(c[0]-d[0])))
+            /(((a[0]-b[0])*(c[1]-d[1]))-((a[1]-b[1])*(c[0]-d[0]))))
         x = (a[0] + t*(b[0]-a[0]))
         y = (a[1] + t*(b[1]-a[1]))
 
-        #u = ((((a[0]-c[0])*(a[1]-b[1]))-((a[1]-c[1])*(a[0]-b[0])))/(((a[0]-b[0])*(c[1]-d[1]))-((a[1]-b[1])*(c[0]-d[0]))))
+        #u = ((((a[0]-c[0])*(a[1]-b[1]))-((a[1]-c[1])*(a[0]-b[0])))
+        #    /(((a[0]-b[0])*(c[1]-d[1]))-((a[1]-b[1])*(c[0]-d[0]))))
         #x = (c[0] + u*(d[0]-c[0]))
         #y = (c[1] + u*(d[1]-c[1]))
 
@@ -580,7 +583,7 @@ def outer_perimetre(perimetre_coords,wall_size):
 
 def start_the_programe(box,features,year_built):
 
-    walls_feature = [0, 0, 0, 0, box[0], box[1], box[1], 0, 0, "walls", ""]
+    walls_feature = [0, 0, 0, box[0], box[1], box[1], 0, 0, 0, "walls", ""]
     features.insert(0,walls_feature)
 
     perimetre_coords = [[0,0]]
@@ -624,7 +627,7 @@ def start_the_programe(box,features,year_built):
 
 
 
-# still need to fix outer perimetre maths
+
 
 
 
@@ -636,27 +639,27 @@ print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 """
 year_built = 2022
 box = [20,20]
-#features = [[0, 0, 0, 10, 10, 0, 10, 0, 0, "triangle feature thing1", ""]]
-features = [[0, 0, 0, 70, 5, 0, 5, 0, 0, "triangle feature thing1", ""]
-           ,[0, 0, 0, 50, 5, 0, 5, 0, 0, "triangle feature thing2", ""]
-           ,[0, 0, 0, 30, 5, 0, 5, 0, 0, "triangle feature thing3", ""]
-           ,[0, 0, 0, 10, 5, 0, 5, 0, 0, "triangle feature thing4", ""]]
-#features = [[0, 0, 0, 70, 7, 7, 7, 0, 0, "triangle feature thing1", ""]
-#           ,[0, 0, 0, 50, 5, 5, 5, 0, 0, "triangle feature thing2", ""]
-#           ,[0, 0, 0, 30, 3, 3, 3, 0, 0, "triangle feature thing3", ""]
-#           ,[0, 0, 0, 10, 1, 1, 1, 0, 0, "triangle feature thing4", ""]]
-#features = [[0, 0, 0, 10, 10, 0, 10, 0, 0, "triangle feature thing1", ""]
-#           ,[0, 0, 0, 15, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
-#features = [[0, 0, 0, 15, 5, 0, 5, 0, 0, "triangle feature thing1", ""]]
+features = [[0, 0, 10, 10, 0, 10, 0, 0, 0, "triangle feature thing1", ""]]
+#features = [[0, 0, 70, 5, 0, 5, 0, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 50, 5, 0, 5, 0, 0, 0, "triangle feature thing2", ""]
+#           ,[0, 0, 30, 5, 0, 5, 0, 0, 0, "triangle feature thing3", ""]
+#           ,[0, 0, 10, 5, 0, 5, 0, 0, 0, "triangle feature thing4", ""]]
+#features = [[0, 0, 70, 7, 7, 7, 0, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 50, 5, 5, 5, 0, 0, 0, "triangle feature thing2", ""]
+#           ,[0, 0, 30, 3, 3, 3, 0, 0, 0, "triangle feature thing3", ""]
+#           ,[0, 0, 10, 1, 1, 1, 0, 0, 0, "triangle feature thing4", ""]]
+#features = [[0, 0, 10, 10, 0, 10, 0, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 15, 1, 1, 1, 0, 0, 0, "triangle feature thing2", ""]]
+#features = [[0, 0, 15, 5, 0, 5, 0, 0, 0, "triangle feature thing1", ""]]
 
 room_output = start_the_programe(box,features,year_built)"""
 
 
     
 
-#features = [[0, 0, 0, 3, 2, 3, 1, 0, 0, "triangle feature thing1", ""]]
-#features = [[0, 0, 0, 3, 2, 3, 3, 0, 0, "triangle feature thing1", ""]
-#           ,[0, 0, 0, 7, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
+#features = [[0, 0, 3, 2, 3, 1, 0, 0, "triangle feature thing1", ""]]
+#features = [[0, 0, 3, 2, 3, 3, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 7, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 
 
 
@@ -668,6 +671,6 @@ room_output = start_the_programe(box,features,year_built)"""
 
 
 
-#feature = [typelist, subtype, subsubtype, offset, length, height1, height2, inward, inneroffset, name, leadingto]
+#feature = [typelist, subtype, offset, length, height1, height2, inward, side, inneroffset, name, leadingto]
 
 
