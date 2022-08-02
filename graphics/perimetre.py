@@ -488,37 +488,38 @@ def outer_offset_coords(angle,coord_pair,wall_size):
     n = 0
     while (len(coord_pair) > n):
         coords = coord_pair[n]
+        
         if (angle[0] == 0):
             x = (coords[0])
             y = (coords[1]) - (wall_size[0])
 
         if (angle[0] == 1):
-            x = (coords[0]) + (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
-            y = (coords[1]) - (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
+            x = (coords[0]) + ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
+            y = (coords[1]) - ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
             
         if (angle[0] == 2):
             x = (coords[0]) + (wall_size[0])
             y = (coords[1])
             
         if (angle[0] == 3):
-            x = (coords[0]) + (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
-            y = (coords[1]) + (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
+            x = (coords[0]) + ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
+            y = (coords[1]) + ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
             
         if (angle[0] == 4):
             x = (coords[0])
             y = (coords[1]) + (wall_size[0])
             
         if (angle[0] == 5):
-            x = (coords[0]) - (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
-            y = (coords[1]) + (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
+            x = (coords[0]) - ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
+            y = (coords[1]) + ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
             
         if (angle[0] == 6):
             x = (coords[0]) - (wall_size[0])
             y = (coords[1])
             
         if (angle[0] == 7):
-            x = (coords[0]) - (wall_size[0])/(math.cos((math.pi-((math.pi)-(angle[1])))/2))
-            y = (coords[1]) - (wall_size[0])/(math.sin((math.pi-((math.pi)-(angle[1])))/2))
+            x = (coords[0]) - ((wall_size[0])*(math.cos((math.pi/2)-(math.pi-angle[1]))))
+            y = (coords[1]) - ((wall_size[0])*(math.sin((math.pi/2)-(math.pi-angle[1]))))
         
         coord_pair[n] = [x,y]
         n = n + 1
@@ -636,10 +637,14 @@ print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 year_built = 2022
 box = [20,20]
 #features = [[0, 0, 0, 10, 10, 0, 10, 0, 0, "triangle feature thing1", ""]]
-features = [[0, 0, 0, 70, 7, 7, 7, 0, 0, "triangle feature thing1", ""]
-           ,[0, 0, 0, 50, 5, 5, 5, 0, 0, "triangle feature thing2", ""]
-           ,[0, 0, 0, 30, 3, 3, 3, 0, 0, "triangle feature thing3", ""]
-           ,[0, 0, 0, 10, 1, 1, 1, 0, 0, "triangle feature thing4", ""]]
+features = [[0, 0, 0, 70, 5, 0, 5, 0, 0, "triangle feature thing1", ""]
+           ,[0, 0, 0, 50, 5, 0, 5, 0, 0, "triangle feature thing2", ""]
+           ,[0, 0, 0, 30, 5, 0, 5, 0, 0, "triangle feature thing3", ""]
+           ,[0, 0, 0, 10, 5, 0, 5, 0, 0, "triangle feature thing4", ""]]
+#features = [[0, 0, 0, 70, 7, 7, 7, 0, 0, "triangle feature thing1", ""]
+#           ,[0, 0, 0, 50, 5, 5, 5, 0, 0, "triangle feature thing2", ""]
+#           ,[0, 0, 0, 30, 3, 3, 3, 0, 0, "triangle feature thing3", ""]
+#           ,[0, 0, 0, 10, 1, 1, 1, 0, 0, "triangle feature thing4", ""]]
 #features = [[0, 0, 0, 10, 10, 0, 10, 0, 0, "triangle feature thing1", ""]
 #           ,[0, 0, 0, 15, 1, 1, 1, 0, 0, "triangle feature thing2", ""]]
 #features = [[0, 0, 0, 15, 5, 0, 5, 0, 0, "triangle feature thing1", ""]]
