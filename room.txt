@@ -1,0 +1,18 @@
+{"info":
+    [{"YearBuilt":2022}
+    ,{"BoxSize":[
+        {"width":20},{"height":20}
+    ]}
+    ,{"PresetWalls":[
+        
+    ]}
+    ,{"Features":[
+        {"feature":[
+            {"typelist":1}, {"subtype":0}, {"offset":25}, {"length":5}, {"height1":0}, {"height2":0}, {"inward":0}, {"side":0}, {"inneroffset":0}, {"name":"triangle feature thing1"}, {"leadingto":""}
+        ]}
+        ,
+        {"feature":[
+            {"typelist":0}, {"subtype":0}, {"offset":10}, {"length":2}, {"height1":2}, {"height2":2}, {"inward":0}, {"side":0}, {"inneroffset":0}, {"name":"triangle feature thing1"}, {"leadingto":""}
+        ]}
+    ]}
+]}
