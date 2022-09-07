@@ -230,7 +230,7 @@ def gathering_specs():
 
 
 # store coordinates in segments instead of points???
-
+# non wall features need to not be used in calculation of outer perim
 
 
 
