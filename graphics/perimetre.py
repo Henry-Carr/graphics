@@ -44,6 +44,7 @@ import math
 import json
 import random
 from re import U
+import random
 
 def perimetre_length(coords,upto_point):
     if (upto_point <= 0):
@@ -204,6 +205,7 @@ def gathering_specs():
     featuresdict =          (info_stuff[3])["Features"]
 
     features = []
+    non_wall_features = []
 
     for featuredict in featuresdict:
 
@@ -221,14 +223,13 @@ def gathering_specs():
         feature.append(((featuredict["feature"])[9])["name"])
         feature.append(((featuredict["feature"])[10])["leadingto"])
 
-        features.append(feature)
-    
-    def quicksort_features(features):
-        for n in len(features):
-            (features[n])[0]
-            random.randrange(3, 9)
+        if (feature[0] == 0):
+            feature.append(features)
+        else:
+            feature.append(non_wall_features)
 
-    features = quicksort_features(features)
+    features = [features+non_wall_features]
+
 
     file_data = [year_built,box,preset_wall_list,features]
 
@@ -808,8 +809,8 @@ def start_the_programe():
             perimetre_coords =      perim_wall_prst[0]
             preset_wall_type_list = perim_wall_prst[1]
 
-        if (((feature)[0] == 1) and (fitting != False)):
-            print("the feature is a window")
+        if (((feature)[0] != 0) and (fitting != False)):
+            print("the feature is a not a wall")
             perim_wall_prst =       adding_window_feature(fitting,preset_wall_type_list)
             perimetre_coords =      perim_wall_prst[0]
             preset_wall_type_list = perim_wall_prst[1]
