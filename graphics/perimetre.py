@@ -42,6 +42,7 @@ from __future__ import division
 from copy import copy
 import math
 import json
+import random
 from re import U
 
 def perimetre_length(coords,upto_point):
@@ -199,7 +200,7 @@ def gathering_specs():
     info_stuff =            items["info"]
     year_built =            (info_stuff[0])["YearBuilt"]
     box =                   [(((info_stuff[1])["BoxSize"])[0])["width"],(((info_stuff[1])["BoxSize"])[1])["height"]]
-    preset_wall_list = (info_stuff[2])["PresetWalls"]
+    preset_wall_list =      (info_stuff[2])["PresetWalls"]
     featuresdict =          (info_stuff[3])["Features"]
 
     features = []
@@ -222,6 +223,13 @@ def gathering_specs():
 
         features.append(feature)
     
+    def quicksort_features(features):
+        for n in len(features):
+            (features[n])[0]
+            random.randrange(3, 9)
+
+    features = quicksort_features(features)
+
     file_data = [year_built,box,preset_wall_list,features]
 
     return file_data
@@ -232,6 +240,7 @@ def gathering_specs():
 # store coordinates in segments instead of points???
 # non wall features need to not be used in calculation of outer perim
 
+# line segment intersection for non walls
 
 
 
