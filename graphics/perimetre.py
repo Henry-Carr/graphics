@@ -204,6 +204,7 @@ def gathering_specs():
     featuresdict =          (info_stuff[3])["Features"]
 
     features = []
+    non_wall_features = []
 
     for featuredict in featuresdict:
 
@@ -221,49 +222,12 @@ def gathering_specs():
         feature.append(((featuredict["feature"])[9])["name"])
         feature.append(((featuredict["feature"])[10])["leadingto"])
 
-        features.append(feature)
-    
-    def quicksort_features(features):
-        # Python program for implementation of Quicksort Sort
-        # This implementation utilizes pivot as the last element in the nums list
-        # It has a pointer to keep track of the elements smaller than the pivot
-        # At the very end of partition() function, the pointer is swapped with the pivot
-        # to come up with a "sorted" nums relative to the pivot
-        def partition(l, r, nums):
-            # Last element will be the pivot and the first element the pointer
-            pivot, ptr = nums[r], l
-            for i in range(l, r):
-                if nums[i] <= pivot:
-                    # Swapping values smaller than the pivot to the front
-                    nums[i], nums[ptr] = nums[ptr], nums[i]
-                    ptr += 1
-            # Finally swapping the last element with the pointer indexed number
-            nums[ptr], nums[r] = nums[r], nums[ptr]
-            return ptr
-        
-        # With quicksort() function, we will be utilizing the above code to obtain the pointer
-        # at which the left values are all smaller than the number at pointer index and vice versa
-        # for the right values.
-        
-        
-        def quicksort(l, r, nums):
-            if len(nums) == 1:  # Terminating Condition for recursion. VERY IMPORTANT!
-                return nums
-            if l < r:
-                pi = partition(l, r, nums)
-                quicksort(l, pi-1, nums)  # Recursively sorting the left values
-                quicksort(pi+1, r, nums)  # Recursively sorting the right values
-            return nums
-        
-        
-        example = [4, 5, 1, 2, 3]
-        result = [1, 2, 3, 4, 5]
-        print(quicksort(0, len(example)-1, example))
-        
-        example = [2, 5, 6, 1, 4, 6, 2, 4, 7, 8]
-        result = [1, 2, 2, 4, 4, 5, 6, 6, 7, 8]
+        if (feature[0] == 0):
+            feature.append(features)
+        else:
+            feature.append(non_wall_features)
 
-    features = quicksort_features(features)
+    features = [features+non_wall_features]
 
 
     file_data = [year_built,box,preset_wall_list,features]
@@ -843,8 +807,8 @@ def start_the_programe():
             perimetre_coords =      perim_wall_prst[0]
             preset_wall_type_list = perim_wall_prst[1]
 
-        if (((feature)[0] == 1) and (fitting != False)):
-            print("the feature is a window")
+        if (((feature)[0] != 0) and (fitting != False)):
+            print("the feature is a not a wall")
             perim_wall_prst =       adding_window_feature(fitting,preset_wall_type_list)
             perimetre_coords =      perim_wall_prst[0]
             preset_wall_type_list = perim_wall_prst[1]

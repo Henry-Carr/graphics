@@ -8,7 +8,7 @@
     ]}
     ,{"Features":[
         {"feature":[
-            {"typelist":1}, {"subtype":0}, {"offset":25}, {"length":5}, {"height1":0}, {"height2":0}, {"inward":0}, {"side":0}, {"inneroffset":0}, {"name":"triangle feature thing1"}, {"leadingto":""}
+            {"typelist":0}, {"subtype":0}, {"offset":25}, {"length":5}, {"height1":5}, {"height2":5}, {"inward":0}, {"side":0}, {"inneroffset":0}, {"name":"triangle feature thing1"}, {"leadingto":""}
         ]}
         ,
         {"feature":[
